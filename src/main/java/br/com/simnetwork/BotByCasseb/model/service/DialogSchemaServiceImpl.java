@@ -1,0 +1,46 @@
+package br.com.simnetwork.BotByCasseb.model.service;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
+import br.com.simnetwork.BotByCasseb.model.entity.app.StaticBean;
+import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema;
+import br.com.simnetwork.BotByCasseb.model.repository.DialogSchemaRepository;
+
+@Service("dialogSchemaService")
+public class DialogSchemaServiceImpl implements DialogSchemaService{
+
+	@Autowired
+	private DialogSchemaRepository dialogSchemaRepo;
+	@Autowired
+	private ContextService contextService;
+	
+	@Override
+	public void synchronizeDialogSchema(String dialogSchemaName) {
+		Object dialogSchemaObject = contextService.getObjectBean(dialogSchemaName, DialogSchema.class);
+		if(dialogSchemaObject != null) {
+			DialogSchema dialogSchema = (DialogSchema) dialogSchemaObject;
+			dialogSchemaRepo.save(dialogSchema);
+		}
+	}
+
+	@Override
+	public void synchronizeAllDialogSchema() {
+		dialogSchemaRepo.deleteAll();
+		
+		for(String dialogSchemaName : contextService.getDialogSchemasBeanDefinitionNames(true)) {
+			synchronizeDialogSchema(dialogSchemaName);
+		}
+		
+	}
+
+	@Override
+	public DialogSchema findDialogSchemabyNomeSchema(String nomeSchema) {
+		return dialogSchemaRepo.findOne(nomeSchema);
+	}
+
+}

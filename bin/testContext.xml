@@ -1,0 +1,32 @@
+<beans
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans">
+
+	<!-- Schemas de Diálogos -->
+
+	<bean id="|D|DialogSchemaTest|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|DialogSchemaTest|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|HelloWorldTest|" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- Schemas de passos -->
+
+	<bean id="|S|HelloWorldTest|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+		scope="prototype">
+		<property name="nomeStep" value="|S|HelloWorld|" />
+		<property name="botMessage" value="Bem Vindo Test" />
+		<property name="StepType" value="SIMPLEMESSAGE" />
+	</bean>
+
+</beans>
