@@ -1,13 +1,8 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import br.com.simnetwork.BotByCasseb.model.entity.app.StaticBean;
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogSchemaRepository;
 

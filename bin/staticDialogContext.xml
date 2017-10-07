@@ -42,6 +42,13 @@
 		<property name="nomeStep" value="|S|HelloWorld2|" />
 		<property name="botMessage" value="Bem Vindo Test2" />
 		<property name="StepType" value="SIMPLEMESSAGE" />
+		<property name="options">
+			<list>
+				<value>Botão 1</value>
+				<value>Botão 2</value>
+				<value>Botão 3</value>
+			</list>
+		</property>
 	</bean>
 	
 	<bean id="|S|HelloWorldTest3|"

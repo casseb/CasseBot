@@ -27,6 +27,13 @@
 		<property name="nomeStep" value="|S|HelloWorld|" />
 		<property name="botMessage" value="Bem Vindo Test" />
 		<property name="StepType" value="SIMPLEMESSAGE" />
+		<property name="options">
+			<list>
+				<value>Teste A</value>
+				<value>Teste B</value>
+				<value>Teste C</value>
+			</list>
+		</property>
 	</bean>
 
 </beans>

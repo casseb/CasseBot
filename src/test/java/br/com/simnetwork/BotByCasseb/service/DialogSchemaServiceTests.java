@@ -54,9 +54,27 @@ public class DialogSchemaServiceTests {
 	}
 
 	@Test
-	public void sycronizeDialogSchemaTest() {
-		assertNotNull(dialogSchemaRepo.findOne("|D|DialogSchemaTest|"));
-		assertFalse(dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().isEmpty());
+	public void sycronizeDialogSchemaTest1() {
+		assertNotNull("Conferindo bean no banco",dialogSchemaRepo.findOne("|D|DialogSchemaTest|"));
 	}
+	
+	@Test
+	public void sycronizeDialogSchemaTest2() {
+		assertFalse("Conferindo passos definidos",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().isEmpty());
+	}
+	
+	/*
+	@Test
+	public void sycronizeDialogSchemaTest3() {
+		assertFalse("Conferindo se as opções estão vazias",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1).getOptions().isEmpty());
+	}
+	
+	@Test
+	public void sycronizeDialogSchemaTest4() {
+		assertNotNull("Conferindo carregamento do keyboard",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1).getKeyboard());
+	}
+	*/
+	
+	
 
 }

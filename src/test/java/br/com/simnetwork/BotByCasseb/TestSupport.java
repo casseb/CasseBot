@@ -17,12 +17,12 @@ public class TestSupport {
 					"  {\r\n" + 
 					"  \"date\":1493252008,\"chat\":\r\n" + 
 					"    {\r\n" + 
-					"      \"last_name\":\"Casseb\",\"id\":111111111,\"type\":\"private\",\"first_name\":\"Felipe\"\r\n" + 
+					"      \"last_name\":\"Casseb\",\"id\":1,\"type\":\"private\",\"first_name\":\"Felipe\"\r\n" + 
 					"      \r\n" + 
 					"    },\r\n" + 
 					"  \"message_id\":111,\"from\":\r\n" + 
 					"    {\r\n" + 
-					"      \"last_name\":\"Casseb\",\"id\":111111111,\"first_name\":\"Felipe\"\r\n" + 
+					"      \"last_name\":\"Casseb\",\"id\":1,\"first_name\":\"Felipe\"\r\n" + 
 					"      \r\n" + 
 					"    },\r\n" + 
 					"    \"text\":\"Casseb\"\r\n" + 

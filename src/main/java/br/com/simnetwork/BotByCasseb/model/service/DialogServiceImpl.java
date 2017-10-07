@@ -3,12 +3,11 @@ package br.com.simnetwork.BotByCasseb.model.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.request.Keyboard;
 
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.Dialog;
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema;
-import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStatus;
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema;
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.StepType;
 import br.com.simnetwork.BotByCasseb.model.entity.object.Bot;
@@ -18,12 +17,14 @@ import br.com.simnetwork.BotByCasseb.model.repository.DialogRepository;
 @Service("dialogService")
 public class DialogServiceImpl implements DialogService {
 
-	@Autowired
-	private BotUserService botUserService;
+	
+	//private BotUserServiceImpl botUserService = new BotUserServiceImpl();
 	@Autowired
 	private DialogRepository dialogRepo;
 	@Autowired
 	private DialogSchemaService dialogSchemaService;
+	@Autowired
+	private BotUserService botUserService;
 
 	@Override
 	public void decideDialog(Message message) {
@@ -48,10 +49,11 @@ public class DialogServiceImpl implements DialogService {
 		Dialog dialog = dialogRepo.findOne(botUser);
 		DialogSchema dialogSchema = dialog.getDialogSchema();
 		DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
+		Keyboard keyboard = dialogStepSchema.getKeyboard();
 
 		// Execução baseado no tipo do passo
 		if (dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)) {
-			executeSimpleMessage(botUser, dialogStepSchema);
+			executeSimpleMessage(botUser, dialogStepSchema, keyboard);
 		}
 		
 		// Avanço do passo
@@ -66,14 +68,15 @@ public class DialogServiceImpl implements DialogService {
 
 	}
 
-	private void executeSimpleMessage(BotUser botUser, DialogStepSchema dialogStepSchema) {
-		Bot.sendMessage(botUser.getId().toString(), dialogStepSchema.getBotMessage());
-	}
-
 	@Override
 	public void resetAllDialogs() {
-		dialogRepo.deleteAll();
-		
+		dialogRepo.deleteAll();	
 	}
+	
+	private void executeSimpleMessage(BotUser botUser, DialogStepSchema dialogStepSchema, Keyboard keyboard) {
+		Bot.sendMessage(botUser.getId().toString(), dialogStepSchema.getBotMessage(),keyboard);
+	}
+
+	
 
 }

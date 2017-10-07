@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.simnetwork.BotByCasseb.TestSupport;
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
+import br.com.simnetwork.BotByCasseb.model.repository.BotUserRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogSchemaRepository;
 import br.com.simnetwork.BotByCasseb.model.service.BotUserService;
@@ -25,6 +26,8 @@ import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
+import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 
 
 @RunWith(SpringRunner.class)
@@ -53,6 +56,11 @@ public class DialogServiceTests {
         public BotUserService botUserService() {
             return new BotUserServiceImpl();
         }
+        
+        @Bean
+        public KeyboardService keyboardService() {
+            return new KeyboardServiceImpl();
+        }
     }
 
 	@Autowired
@@ -63,6 +71,8 @@ public class DialogServiceTests {
 	private DialogService dialogService;
 	@Autowired
 	private DialogRepository dialogRepo;
+	@Autowired
+	private BotUserRepository botUserRepo;
 
 	@Before
 	public void before() {
@@ -74,11 +84,19 @@ public class DialogServiceTests {
 	public void after() {
 		dialogSchemaRepo.delete("|D|DialogSchemaTest|");
 		dialogRepo.delete(new BotUser(TestSupport.createMessage().from()));
+		botUserRepo.delete(botUserRepo.findOne(TestSupport.createMessage().from().id()));
 	}
 
 	@Test
 	public void createDialogTest() {
 		assertNotNull(dialogRepo.findOne(new BotUser(TestSupport.createMessage().from())));
 	}
+	
+	@Test
+	public void resetAllDialogsTest() {
+		dialogService.resetAllDialogs();
+		assertTrue(dialogRepo.findAll().isEmpty());
+	}
+	
 
 }
