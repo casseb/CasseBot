@@ -12,6 +12,7 @@ import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.model.request.ChatAction;
 import com.pengrad.telegrambot.model.request.Keyboard;
 import com.pengrad.telegrambot.model.request.KeyboardButton;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardRemove;
 import com.pengrad.telegrambot.request.SendMessage;
 
 public class Bot {
@@ -21,7 +22,7 @@ public class Bot {
 	
 	public static void sendMessage(String chatId, String text, Keyboard keyboard) {
 		if(keyboard == null) {
-			bot.execute(new SendMessage(chatId, text));
+			bot.execute(new SendMessage(chatId, text).replyMarkup(new ReplyKeyboardRemove()));
 		}else {
 			bot.execute(new SendMessage(chatId, text).replyMarkup(keyboard));
 		}
