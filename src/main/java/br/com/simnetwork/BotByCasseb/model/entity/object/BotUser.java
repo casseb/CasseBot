@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 
+import com.pengrad.telegrambot.model.Contact;
 import com.pengrad.telegrambot.model.User;
 
 import lombok.Getter;
@@ -22,8 +23,9 @@ public class BotUser implements Serializable{
 	private String firstName;
 	private Boolean isBot;
 	private String languageCode;
-	public String lastName;
-	public String username;
+	private String lastName;
+	private String username;
+	private Contact contact;
 	
 	public BotUser(User user) {
 		super();

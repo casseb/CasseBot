@@ -4,6 +4,22 @@
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans">
 
+	<bean id="|D|Bem Vindo|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Bem Vindo|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|Bem Vindo|" />
+				</entry>
+				<entry key="2">
+					<bean parent="|S|Bem Vindo2|" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
 	
 	<bean id="|D|DialogSchemaTest2|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
@@ -27,6 +43,23 @@
 	
 
 	<!-- Schemas de passos -->
+	
+	<bean id="|S|Bem Vindo|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+		scope="prototype">
+		<property name="nomeStep" value="|S|Bem Vindo|" />
+		<property name="botMessage" value="Seja bem vindo ao Bot By Casseb! \n Pressione o botão abaixo para fornecer seu número do celular!" />
+		<property name="StepType" value="REQUESTCONTACT" />
+	</bean>
+	
+	<bean id="|S|Bem Vindo2|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+		scope="prototype">
+		<property name="nomeStep" value="|S|Bem Vindo2|" />
+		<property name="botMessage" value="Obrigado" />
+		<property name="StepType" value="SIMPLEMESSAGE" />
+	</bean>
+	
 
 	<bean id="|S|HelloWorldTest|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"

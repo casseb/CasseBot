@@ -1,5 +1,8 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +20,14 @@ import br.com.simnetwork.BotByCasseb.model.repository.DialogRepository;
 @Service("dialogService")
 public class DialogServiceImpl implements DialogService {
 
-	
-	//private BotUserServiceImpl botUserService = new BotUserServiceImpl();
 	@Autowired
 	private DialogRepository dialogRepo;
 	@Autowired
 	private DialogSchemaService dialogSchemaService;
 	@Autowired
 	private BotUserService botUserService;
+	@Autowired
+	private KeyboardService keyboardService;
 
 	@Override
 	public void decideDialog(Message message) {
@@ -38,7 +41,13 @@ public class DialogServiceImpl implements DialogService {
 	@Override
 	public void createDialog(Message message, DialogSchema dialogSchema) {
 		BotUser botUser = botUserService.createBotUser(message);
-		Dialog dialog = new Dialog(botUser, dialogSchema);
+		Dialog dialog;
+		if(botUser.getContact()==null) {
+			dialog = new Dialog(botUser, dialogSchema);
+			//dialog = new Dialog(botUser,dialogSchemaService.findDialogSchemabyNomeSchema("|D|Bem Vindo|"));
+		}else {
+			dialog = new Dialog(botUser, dialogSchema);
+		}
 		dialogRepo.save(dialog);
 	}
 
@@ -50,33 +59,59 @@ public class DialogServiceImpl implements DialogService {
 		DialogSchema dialogSchema = dialog.getDialogSchema();
 		DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
 		Keyboard keyboard = dialogStepSchema.getKeyboard();
+		boolean endStep = false;
 
-		// Execução baseado no tipo do passo
+		// Execução baseado no tipo do passo---------------------------------
+		// Mensagem Simples
 		if (dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)) {
 			executeSimpleMessage(botUser, dialogStepSchema, keyboard);
+			endStep = true;
 		}
 		
-		// Avanço do passo
-		dialog.setCurrentStep(dialog.getCurrentStep() + 1);
-
+		//Requisição de contato
+		if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONTACT)) {
+			if (message.contact() == null) {
+				executeRequestContact(botUser, dialogStepSchema);
+			} else {
+				if(!message.contact().userId().equals(botUser.getId())) {
+					executeRequestContact(botUser, dialogStepSchema);
+				}else {
+					botUserService.updateBotUserContact(botUser, message.contact());
+					endStep = true;
+				}
+			}
+		}
+		
+		//Avanço do passo
+		if (endStep) {
+			dialog.setCurrentStep(dialog.getCurrentStep() + 1);
+		}
+		
 		// Oficialização das mudanças do diálogo
 		if (dialogSchema.getSteps().get(dialog.getCurrentStep()) == null) {
 			dialogRepo.delete(botUser);
 		} else {
 			dialogRepo.save(dialog);
 		}
+		
 
 	}
 
 	@Override
 	public void resetAllDialogs() {
-		dialogRepo.deleteAll();	
-	}
-	
-	private void executeSimpleMessage(BotUser botUser, DialogStepSchema dialogStepSchema, Keyboard keyboard) {
-		Bot.sendMessage(botUser.getId().toString(), dialogStepSchema.getBotMessage(),keyboard);
+		dialogRepo.deleteAll();
 	}
 
-	
+	private void executeSimpleMessage(BotUser botUser, DialogStepSchema dialogStepSchema, Keyboard keyboard) {
+		List<String> defaultOptions = new LinkedList<String>();
+		defaultOptions.add("Menu");
+		defaultOptions.add("Avançar");
+		keyboard  = keyboardService.getSimpleKeyboard(defaultOptions);
+		Bot.sendMessage(botUser.getId().toString(), dialogStepSchema.getBotMessage(), keyboard);
+	}
+
+	private void executeRequestContact(BotUser botUser, DialogStepSchema dialogStepSchema) {
+		Bot.requestContact(botUser.getId().toString(), dialogStepSchema.getBotMessage());
+	}
 
 }

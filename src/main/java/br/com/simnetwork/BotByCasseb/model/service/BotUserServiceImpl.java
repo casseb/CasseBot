@@ -3,6 +3,7 @@ package br.com.simnetwork.BotByCasseb.model.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pengrad.telegrambot.model.Contact;
 import com.pengrad.telegrambot.model.Message;
 
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
@@ -28,6 +29,12 @@ public class BotUserServiceImpl implements BotUserService{
 	@Override
 	public BotUser locateBotUser(Integer id) {
 		return botUserRepo.findOne(id);
+	}
+
+	@Override
+	public void updateBotUserContact(BotUser botUser, Contact contact) {
+		botUser.setContact(contact);
+		botUserRepo.save(botUser);
 	}
 
 }
