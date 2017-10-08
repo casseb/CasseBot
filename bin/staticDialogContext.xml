@@ -31,7 +31,7 @@
 	<bean id="|S|HelloWorldTest|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 		scope="prototype">
-		<property name="nomeStep" value="|S|HelloWorld|" />
+		<property name="nomeStep" value="|S|HelloWorldTest|" />
 		<property name="botMessage" value="Bem Vindo Test" />
 		<property name="StepType" value="SIMPLEMESSAGE" />
 	</bean>
@@ -39,7 +39,7 @@
 	<bean id="|S|HelloWorldTest2|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 		scope="prototype">
-		<property name="nomeStep" value="|S|HelloWorld2|" />
+		<property name="nomeStep" value="|S|HelloWorldTest2|" />
 		<property name="botMessage" value="Bem Vindo Test2" />
 		<property name="StepType" value="SIMPLEMESSAGE" />
 		<property name="options">
@@ -54,7 +54,7 @@
 	<bean id="|S|HelloWorldTest3|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 		scope="prototype">
-		<property name="nomeStep" value="|S|HelloWorld3|" />
+		<property name="nomeStep" value="|S|HelloWorldTest3|" />
 		<property name="botMessage" value="Bem Vindo Test3" />
 		<property name="StepType" value="SIMPLEMESSAGE" />
 	</bean>

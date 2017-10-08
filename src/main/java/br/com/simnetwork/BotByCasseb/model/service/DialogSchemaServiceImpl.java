@@ -35,7 +35,8 @@ public class DialogSchemaServiceImpl implements DialogSchemaService{
 
 	@Override
 	public DialogSchema findDialogSchemabyNomeSchema(String nomeSchema) {
-		return dialogSchemaRepo.findOne(nomeSchema);
+		DialogSchema dialogSchema = dialogSchemaRepo.findOne(nomeSchema);
+		return dialogSchema;
 	}
 
 }

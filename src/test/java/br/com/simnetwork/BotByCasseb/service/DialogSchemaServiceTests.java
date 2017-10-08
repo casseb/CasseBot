@@ -63,7 +63,6 @@ public class DialogSchemaServiceTests {
 		assertFalse("Conferindo passos definidos",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().isEmpty());
 	}
 	
-	/*
 	@Test
 	public void sycronizeDialogSchemaTest3() {
 		assertFalse("Conferindo se as opções estão vazias",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1).getOptions().isEmpty());
@@ -73,8 +72,6 @@ public class DialogSchemaServiceTests {
 	public void sycronizeDialogSchemaTest4() {
 		assertNotNull("Conferindo carregamento do keyboard",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1).getKeyboard());
 	}
-	*/
-	
 	
 
 }
