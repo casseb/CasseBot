@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogService;
 
+@Component
 public class Start {
 
 	@Autowired
