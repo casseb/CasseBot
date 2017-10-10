@@ -7,4 +7,6 @@ import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
 
 public interface DialogRepository extends MongoRepository<Dialog, BotUser>{
 
+	public Dialog findByBotUserId(Integer id);
+	
 }

@@ -32,7 +32,7 @@ public class DialogServiceImpl implements DialogService {
 	@Override
 	public void decideDialog(Message message) {
 		BotUser botUser = new BotUser(message.from());
-		if (!dialogRepo.exists(botUser)) {
+		if (dialogRepo.findByBotUserId(botUser.getId())==null) {
 			createDialog(message, dialogSchemaService.findDialogSchemabyNomeSchema("|D|DialogSchemaTest2|"));
 		}
 		executeDialog(message);
@@ -43,8 +43,7 @@ public class DialogServiceImpl implements DialogService {
 		BotUser botUser = botUserService.createBotUser(message);
 		Dialog dialog;
 		if(botUser.getContact()==null) {
-			dialog = new Dialog(botUser, dialogSchema);
-			//dialog = new Dialog(botUser,dialogSchemaService.findDialogSchemabyNomeSchema("|D|Bem Vindo|"));
+			dialog = new Dialog(botUser,dialogSchemaService.findDialogSchemabyNomeSchema("|D|Bem Vindo|"));
 		}else {
 			dialog = new Dialog(botUser, dialogSchema);
 		}
@@ -55,7 +54,7 @@ public class DialogServiceImpl implements DialogService {
 	public void executeDialog(Message message) {
 		// Preparando dados para execução
 		BotUser botUser = botUserService.locateBotUser(message.from().id());
-		Dialog dialog = dialogRepo.findOne(botUser);
+		Dialog dialog = dialogRepo.findByBotUserId(botUser.getId());
 		DialogSchema dialogSchema = dialog.getDialogSchema();
 		DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
 		Keyboard keyboard = dialogStepSchema.getKeyboard();
@@ -89,11 +88,15 @@ public class DialogServiceImpl implements DialogService {
 		
 		// Oficialização das mudanças do diálogo
 		if (dialogSchema.getSteps().get(dialog.getCurrentStep()) == null) {
-			dialogRepo.delete(botUser);
+			dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
 		} else {
 			dialogRepo.save(dialog);
 		}
 		
+		//Executa próximo passo
+		if(endStep && dialogRepo.findByBotUserId(botUser.getId())!=null) {
+			executeDialog(message);
+		}
 
 	}
 
@@ -101,11 +104,10 @@ public class DialogServiceImpl implements DialogService {
 	public void resetAllDialogs() {
 		dialogRepo.deleteAll();
 	}
-
+	
 	private void executeSimpleMessage(BotUser botUser, DialogStepSchema dialogStepSchema, Keyboard keyboard) {
 		List<String> defaultOptions = new LinkedList<String>();
 		defaultOptions.add("Menu");
-		defaultOptions.add("Avançar");
 		keyboard  = keyboardService.getSimpleKeyboard(defaultOptions);
 		Bot.sendMessage(botUser.getId().toString(), dialogStepSchema.getBotMessage(), keyboard);
 	}

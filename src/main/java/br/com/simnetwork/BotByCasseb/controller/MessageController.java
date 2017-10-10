@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 
+import br.com.simnetwork.BotByCasseb.model.entity.object.Bot;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogService;
 @RestController
@@ -19,6 +20,7 @@ public class MessageController {
 	
 	@RequestMapping("/readMessages")
 	public void readMessages(@RequestBody String stringRequest) {
+		//Bot.sendMessage("336050938", stringRequest, null);
 		Update update = BotUtils.parseUpdate(stringRequest);
 		Message message = update.message();
 		dialogService.decideDialog(message);
