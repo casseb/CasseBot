@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 
@@ -31,26 +32,33 @@ public class DialogServiceImpl implements DialogService {
 	private BotUserService botUserService;
 	@Autowired
 	private KeyboardService keyboardService;
+	@Autowired
+	private DialogStepSchemaService dialogStepSchemaService;
 
 	@Override
 	public void decideDialog(Update update) {
+		User user;
+		String callBackData = null;
 		Message message;
 		if (update.message() != null) {
+			user = update.message().from();
 			message = update.message();
 		} else {
+			user = update.callbackQuery().from();
+			callBackData = update.callbackQuery().data();
 			message = update.callbackQuery().message();
 		}
-		BotUser botUser = new BotUser(message.from());
+		BotUser botUser = new BotUser(user);
 		if (dialogRepo.findByBotUserId(botUser.getId()) == null) {
-			createDialog(message, dialogSchemaService.findDialogSchemabyNomeSchema("|D|Menu|"));
+			createDialog(user, dialogSchemaService.findDialogSchemabyNomeSchema("|D|Menu|"));
 		}
-		executeDialog(message);
+		executeDialog(user,message,callBackData);
 
 	}
 
 	@Override
-	public void createDialog(Message message, DialogSchema dialogSchema) {
-		BotUser botUser = botUserService.createBotUser(message);
+	public void createDialog(User user, DialogSchema dialogSchema) {
+		BotUser botUser = botUserService.createBotUser(user);
 		Dialog dialog;
 		if (botUser.getContact() == null) {
 			dialog = new Dialog(botUser, dialogSchemaService.findDialogSchemabyNomeSchema("|D|Bem Vindo|"));
@@ -61,17 +69,17 @@ public class DialogServiceImpl implements DialogService {
 	}
 
 	@Override
-	public void executeDialog(Message message) {
+	public void executeDialog(User user, Message message, String callBackData) {
 
 		boolean executeAgain = false;
 
 		// Preparando dados para execução
-		BotUser botUser = botUserService.locateBotUser(message.from().id());
+		BotUser botUser = botUserService.locateBotUser(user.id());
 		Dialog dialog = dialogRepo.findOne(botUser);
 		DialogSchema dialogSchema = dialog.getDialogSchema();
 		DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
-		Keyboard keyboard = dialogStepSchema.getKeyboard();
-		InlineKeyboardMarkup inlineKeyboard = dialogStepSchema.getInlineKeyboard();
+		Keyboard keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
+		InlineKeyboardMarkup inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
 
 		do {
 
@@ -125,9 +133,14 @@ public class DialogServiceImpl implements DialogService {
 					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
 					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
 				}else {
-					dialog.addDecision(dialogStepSchema.getKey(), message.text());
-					dialog.setDialogStatus(DialogStatus.INICIO);
-					executeAgain = true;
+					if(callBackData != null) {
+						dialog.addDecision(dialogStepSchema.getKey(), callBackData);
+						dialog.setDialogStatus(DialogStatus.INICIO);
+						executeAgain = true;
+					}else {
+						executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
+					}
+					
 				}
 			}
 
@@ -143,8 +156,8 @@ public class DialogServiceImpl implements DialogService {
 			} else {
 				dialogRepo.save(dialog);
 				dialogStepSchema = dialog.getDialogSchema().getSteps().get(dialog.getCurrentStep());
-				keyboard = dialogStepSchema.getKeyboard();
-				inlineKeyboard = dialogStepSchema.getInlineKeyboard();
+				keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
+				inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
 			}
 
 		} while (executeAgain);

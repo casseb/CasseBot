@@ -10,6 +10,6 @@ public interface KeyboardService {
 
 	public Keyboard getSimpleKeyboard(List<String> keyboardOptions);
 	public Keyboard getDefaultKeyboard();
-	public InlineKeyboardMarkup getSimpleInlineKeyboard(Map<String,String> inlineOptions);
+	public InlineKeyboardMarkup getSimpleInlineKeyboard(List<String> inlineOptions);
 	
 }

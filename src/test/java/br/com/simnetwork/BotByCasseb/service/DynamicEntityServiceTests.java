@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import br.com.simnetwork.BotByCasseb.model.repository.DynamicEntityRepository;
-import br.com.simnetwork.BotByCasseb.model.service.DynamicEntityService;
-import br.com.simnetwork.BotByCasseb.model.service.DynamicEntityServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.repository.EntityRepository;
+import br.com.simnetwork.BotByCasseb.model.service.EntityService;
+import br.com.simnetwork.BotByCasseb.model.service.EntityServiceImpl;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
@@ -24,17 +24,17 @@ public class DynamicEntityServiceTests {
     static class DynamicEntityServiceTestContextConfiguration {
   
         @Bean
-        public DynamicEntityService dynamicEntityService() {
-            return new DynamicEntityServiceImpl();
+        public EntityService dynamicEntityService() {
+            return new EntityServiceImpl();
         }
     }
 	
 	String nomeEntity = "EntidadeTeste";
 
 	@Autowired
-	private DynamicEntityRepository dynamicEntityRepo;
+	private EntityRepository dynamicEntityRepo;
 	@Autowired
-	private DynamicEntityService dynamicEntityService;
+	private EntityService dynamicEntityService;
 
 	@Before
 	public void before() {

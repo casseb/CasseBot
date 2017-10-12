@@ -77,7 +77,7 @@ public class DialogServiceTests {
 	@Before
 	public void before() {
 		dialogSchemaService.synchronizeDialogSchema("|D|DialogSchemaTest|");
-		dialogService.createDialog(TestSupport.createMessage(), (dialogSchemaRepo.findOne("|D|DialogSchemaTest|")));
+		dialogService.createDialog(TestSupport.createMessage().from(), (dialogSchemaRepo.findOne("|D|DialogSchemaTest|")));
 	}
 
 	@After

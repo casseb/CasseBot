@@ -20,9 +20,9 @@ import com.pengrad.telegrambot.model.User;
 
 import br.com.simnetwork.BotByCasseb.TestSupport;
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
-import br.com.simnetwork.BotByCasseb.model.entity.object.DynamicEntity;
+import br.com.simnetwork.BotByCasseb.model.entity.object.Entity;
 import br.com.simnetwork.BotByCasseb.model.repository.BotUserRepository;
-import br.com.simnetwork.BotByCasseb.model.repository.DynamicEntityRepository;
+import br.com.simnetwork.BotByCasseb.model.repository.EntityRepository;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest

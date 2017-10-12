@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import br.com.simnetwork.BotByCasseb.model.entity.object.DynamicEntity;
-import br.com.simnetwork.BotByCasseb.model.repository.DynamicEntityRepository;
+import br.com.simnetwork.BotByCasseb.model.entity.object.Entity;
+import br.com.simnetwork.BotByCasseb.model.repository.EntityRepository;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
@@ -20,11 +20,11 @@ public class DynamicEntityRepositoryTests {
 	String nomeEntity = "EntidadeTeste";
 	
 	@Autowired
-	private DynamicEntityRepository dynamicEntityRepo;
+	private EntityRepository dynamicEntityRepo;
 	
 	@Before
 	public void before() {
-		DynamicEntity dynamicEntity = new DynamicEntity(nomeEntity);
+		Entity dynamicEntity = new Entity(nomeEntity);
 		dynamicEntityRepo.save(dynamicEntity);
 	}
 	

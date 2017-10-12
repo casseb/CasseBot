@@ -33,11 +33,11 @@ public class KeyboardServiceImpl implements KeyboardService {
 
 
 	@Override
-	public InlineKeyboardMarkup getSimpleInlineKeyboard(Map<String, String> inlineOptions) {
+	public InlineKeyboardMarkup getSimpleInlineKeyboard(List<String> inlineOptions) {
 		InlineKeyboardButton[] buttons = new InlineKeyboardButton[inlineOptions.size()];
 		int i = 0;
-		for(String inlineOption : inlineOptions.keySet()) {
-			buttons[i++] = new InlineKeyboardButton(inlineOptions.get(inlineOption)).callbackData(inlineOption);
+		for(String inlineOption : inlineOptions) {
+			buttons[i++] = new InlineKeyboardButton(inlineOption).callbackData(inlineOption);
 		}
 		return new InlineKeyboardMarkup(buttons);
 	}

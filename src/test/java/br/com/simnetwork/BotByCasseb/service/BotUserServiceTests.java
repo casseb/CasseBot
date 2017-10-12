@@ -46,7 +46,7 @@ public class BotUserServiceTests {
 	public void before(){
 		Message message = TestSupport.createMessage();
 		ID = message.from().id();
-		botUserService.createBotUser(message);
+		botUserService.createBotUser(message.from());
 	}
 
 	@After

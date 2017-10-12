@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.pengrad.telegrambot.model.Contact;
 import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.User;
 
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
 import br.com.simnetwork.BotByCasseb.model.repository.BotUserRepository;
@@ -16,13 +17,13 @@ public class BotUserServiceImpl implements BotUserService{
 	private BotUserRepository botUserRepo;
 	
 	@Override
-	public BotUser createBotUser(Message message) {
-		if(!botUserRepo.exists(message.from().id())){
-			BotUser user = new BotUser(message.from());
-			botUserRepo.save(user);
-			return user;
+	public BotUser createBotUser(User user) {
+		if(!botUserRepo.exists(user.id())){
+			BotUser botUser = new BotUser(user);
+			botUserRepo.save(botUser);
+			return botUser;
 		}else {
-			return botUserRepo.findOne(message.from().id());
+			return botUserRepo.findOne(user.id());
 		}
 	}
 

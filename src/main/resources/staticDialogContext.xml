@@ -50,11 +50,10 @@
 						<property name="botMessage" value="Digite uma String qualquer" />
 						<property name="StepType" value="REQUESTINLINEOPTION" />
 						<property name="key" value="s1" />
-						<property name="inlineKeyboard">
-							<map>
-								<entry key="Texto Chave1" value="Texto Valor1"/>
-								<entry key="Texto Chave2" value="Texto Valor2"/>
-							</map>
+						<property name="dynamicList">
+							<bean id="dynamicList" class="br.com.simnetwork.BotByCasseb.model.entity.object.DynamicList">
+								<property name="beanType" value="D"/>
+							</bean>
 						</property>
 					</bean>
 				</entry>

@@ -11,9 +11,9 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema;
-import br.com.simnetwork.BotByCasseb.model.entity.object.DynamicEntity;
+import br.com.simnetwork.BotByCasseb.model.entity.object.Entity;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogSchemaRepository;
-import br.com.simnetwork.BotByCasseb.model.repository.DynamicEntityRepository;
+import br.com.simnetwork.BotByCasseb.model.repository.EntityRepository;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest

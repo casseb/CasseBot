@@ -12,6 +12,7 @@ import org.springframework.data.annotation.Transient;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 
+import br.com.simnetwork.BotByCasseb.model.entity.object.DynamicList;
 import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
 import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 import lombok.Data;
@@ -32,29 +33,9 @@ public class DialogStepSchema {
 	private String botMessage;
 	private StepType stepType;
 	private List<String> keyboardOptions = new LinkedList<>();
-	private Map<String,String> inlineKeyboard = new HashMap<String,String>();
+	private List<String> inlineKeyboard = new LinkedList<>();
+	private DynamicList dynamicList;
 	private String key;
-	
-	
-	public Keyboard getKeyboard() {
-		KeyboardServiceImpl keyboardService = new KeyboardServiceImpl();
-		if(!keyboardOptions.isEmpty()) {
-			return keyboardService.getSimpleKeyboard(keyboardOptions);
-		}else {
-			return keyboardService.getDefaultKeyboard();
-		}
-	}
-	
-	public InlineKeyboardMarkup getInlineKeyboard() {
-		KeyboardServiceImpl keyboardService = new KeyboardServiceImpl();
-		if(!inlineKeyboard.isEmpty()) {
-			return keyboardService.getSimpleInlineKeyboard(inlineKeyboard);
-		}else {
-			return null;
-		}
-			
-	}
-	
 	
 	
 }

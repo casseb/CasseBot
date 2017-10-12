@@ -22,11 +22,11 @@ import br.com.simnetwork.BotByCasseb.TestSupport;
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.Dialog;
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema;
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
-import br.com.simnetwork.BotByCasseb.model.entity.object.DynamicEntity;
+import br.com.simnetwork.BotByCasseb.model.entity.object.Entity;
 import br.com.simnetwork.BotByCasseb.model.repository.BotUserRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogSchemaRepository;
-import br.com.simnetwork.BotByCasseb.model.repository.DynamicEntityRepository;
+import br.com.simnetwork.BotByCasseb.model.repository.EntityRepository;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest

@@ -18,6 +18,8 @@ import br.com.simnetwork.BotByCasseb.model.service.ContextService;
 import br.com.simnetwork.BotByCasseb.model.service.ContextServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaService;
 
 
 @RunWith(SpringRunner.class)
@@ -36,12 +38,19 @@ public class DialogSchemaServiceTests {
         public ContextService contextService() {
             return new ContextServiceImpl();
         }
+        
+        @Bean
+        public DialogStepSchemaService dialogStepSchemaService() {
+            return new DialogStepSchemaServiceImpl();
+        }
     }
 
 	@Autowired
 	private DialogSchemaRepository dialogSchemaRepo;
 	@Autowired
 	private DialogSchemaService dialogSchemaService;
+	@Autowired
+	private DialogStepSchemaService dialogStepSchemaService;
 
 	@Before
 	public void before() {
@@ -70,7 +79,7 @@ public class DialogSchemaServiceTests {
 	
 	@Test
 	public void sycronizeDialogSchemaTest4() {
-		assertNotNull("Conferindo carregamento do keyboard",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1).getKeyboard());
+		assertNotNull("Conferindo carregamento do keyboard",dialogStepSchemaService.getKeyboard(dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1)));
 	}
 	
 
