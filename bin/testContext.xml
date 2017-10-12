@@ -29,7 +29,7 @@
 		<property name="nomeStep" value="|S|HelloWorld|" />
 		<property name="botMessage" value="Bem Vindo Test" />
 		<property name="StepType" value="SIMPLEMESSAGE" />
-		<property name="options">
+		<property name="keyboardOptions">
 			<list>
 				<value>Teste A</value>
 				<value>Teste B</value>

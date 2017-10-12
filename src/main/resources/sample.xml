@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<bean id="|D|DialogSchemaTest2|"
+	class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+	scope="prototype">
+		<property name="nomeSchema" value="|D|DialogSchemaTest2|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean id="|S|TestGetString|"
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|TestGetString|" />
+						<property name="botMessage" value="Digite uma String qualquer" />
+						<property name="StepType" value="REQUESTSTRING" />
+						<property name="key" value="s1" />
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean id="|S|TestCustomMessage|"
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|TestCustomMessage|" />
+						<property name="botMessage"
+							value="Você digitou {{{s1}}} no passo anterior by casseb" />
+						<property name="StepType" value="CUSTOMMESSAGE" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>

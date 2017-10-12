@@ -12,6 +12,7 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.ChatAction;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 import com.pengrad.telegrambot.model.request.KeyboardButton;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
@@ -40,6 +41,10 @@ public class Bot {
                 new KeyboardButton("Disponibilizar Contato").requestContact(true)
         };
 		Keyboard keyboard = new ReplyKeyboardMarkup(keyboardButton);
+		bot.execute(new SendMessage(chatId, text).replyMarkup(keyboard));
+	}
+	
+	public static void requestInlineOption(String chatId, String text, InlineKeyboardMarkup keyboard) {
 		bot.execute(new SendMessage(chatId, text).replyMarkup(keyboard));
 	}
 

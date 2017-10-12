@@ -65,7 +65,7 @@ public class DialogSchemaServiceTests {
 	
 	@Test
 	public void sycronizeDialogSchemaTest3() {
-		assertFalse("Conferindo se as opções estão vazias",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1).getOptions().isEmpty());
+		assertFalse("Conferindo se as opções estão vazias",dialogSchemaRepo.findOne("|D|DialogSchemaTest|").getSteps().get(1).getKeyboardOptions().isEmpty());
 	}
 	
 	@Test

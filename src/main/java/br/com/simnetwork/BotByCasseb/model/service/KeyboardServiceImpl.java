@@ -1,11 +1,14 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 
@@ -13,12 +16,31 @@ import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 public class KeyboardServiceImpl implements KeyboardService {
 
 	@Override
-	public Keyboard getSimpleKeyboard(List<String> options) {
-		Map<Integer, String[]> map = prepareKeyboard(options);
+	public Keyboard getSimpleKeyboard(List<String> keyboardOptions) {
+		Map<Integer, String[]> map = prepareKeyboard(keyboardOptions);
 		Keyboard replyKeyboardMarkup = new ReplyKeyboardMarkup(map.values().toArray(new String[map.size()][20]));
 		return replyKeyboardMarkup;
 	}
 	
+	@Override
+	public Keyboard getDefaultKeyboard() {
+		List<String> options = new LinkedList<String>();
+		options.add("Menu");
+		Map<Integer, String[]> map = prepareKeyboard(options);
+		Keyboard replyKeyboardMarkup = new ReplyKeyboardMarkup(map.values().toArray(new String[map.size()][20]));
+		return replyKeyboardMarkup;
+	}
+
+
+	@Override
+	public InlineKeyboardMarkup getSimpleInlineKeyboard(Map<String, String> inlineOptions) {
+		InlineKeyboardButton[] buttons = new InlineKeyboardButton[inlineOptions.size()];
+		int i = 0;
+		for(String inlineOption : inlineOptions.keySet()) {
+			buttons[i++] = new InlineKeyboardButton(inlineOptions.get(inlineOption)).callbackData(inlineOption);
+		}
+		return new InlineKeyboardMarkup(buttons);
+	}
 
 	private Map<Integer, String[]> prepareKeyboard(List<String> strings) {
 		Map<Integer, String[]> map = new HashMap<Integer, String[]>();
@@ -95,5 +117,12 @@ public class KeyboardServiceImpl implements KeyboardService {
 		}
 		return result;
 	}
+
+	
+
+	
+
+
+	
 
 }

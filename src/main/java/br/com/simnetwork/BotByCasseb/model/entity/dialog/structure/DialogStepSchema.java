@@ -1,12 +1,15 @@
 package br.com.simnetwork.BotByCasseb.model.entity.dialog.structure;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 
 import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
@@ -28,16 +31,30 @@ public class DialogStepSchema {
 	private String nomeStep;
 	private String botMessage;
 	private StepType stepType;
-	private List<String> options = new LinkedList<>();
+	private List<String> keyboardOptions = new LinkedList<>();
+	private Map<String,String> inlineKeyboard = new HashMap<String,String>();
+	private String key;
 	
 	
 	public Keyboard getKeyboard() {
 		KeyboardServiceImpl keyboardService = new KeyboardServiceImpl();
-		if(!options.isEmpty()) {
-			return keyboardService.getSimpleKeyboard(options);
+		if(!keyboardOptions.isEmpty()) {
+			return keyboardService.getSimpleKeyboard(keyboardOptions);
+		}else {
+			return keyboardService.getDefaultKeyboard();
+		}
+	}
+	
+	public InlineKeyboardMarkup getInlineKeyboard() {
+		KeyboardServiceImpl keyboardService = new KeyboardServiceImpl();
+		if(!inlineKeyboard.isEmpty()) {
+			return keyboardService.getSimpleInlineKeyboard(inlineKeyboard);
 		}else {
 			return null;
 		}
+			
 	}
+	
+	
 	
 }

@@ -20,10 +20,9 @@ public class MessageController {
 	
 	@RequestMapping("/readMessages")
 	public void readMessages(@RequestBody String stringRequest) {
-		//Bot.sendMessage("336050938", stringRequest, null);
+		Bot.sendMessage("336050938", stringRequest, null);
 		Update update = BotUtils.parseUpdate(stringRequest);
-		Message message = update.message();
-		dialogService.decideDialog(message);
+		dialogService.decideDialog(update);
 	}
 	
 }
