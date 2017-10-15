@@ -19,6 +19,10 @@ import br.com.simnetwork.BotByCasseb.model.service.ContextServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DynamicListService;
+import br.com.simnetwork.BotByCasseb.model.service.DynamicListServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
+import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaService;
 
 
@@ -42,6 +46,16 @@ public class DialogSchemaServiceTests {
         @Bean
         public DialogStepSchemaService dialogStepSchemaService() {
             return new DialogStepSchemaServiceImpl();
+        }
+        
+        @Bean
+        public KeyboardService keyboardService() {
+            return new KeyboardServiceImpl();
+        }
+        
+        @Bean
+        public DynamicListService dynamicListService() {
+            return new DynamicListServiceImpl();
         }
     }
 

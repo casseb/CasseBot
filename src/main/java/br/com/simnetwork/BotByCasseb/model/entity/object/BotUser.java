@@ -25,7 +25,7 @@ public class BotUser implements Serializable{
 	private String languageCode;
 	private String lastName;
 	private String username;
-	private Contact contact;
+	private String contact;
 	
 	public BotUser(User user) {
 		super();

@@ -4,6 +4,48 @@
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans">
 
+	<!-- Entidades -->
+	
+	<bean id="|E|Cliente|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.object.EntitySchema"
+		scope="prototype">
+		<property name="nomeEntity" value="Cliente"/>
+		<property name="chave" value="id"/>
+		<property name="campos">
+			<map>
+				<entry key="id">
+					<bean id="|F|Cliente_id"
+					class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
+					scope="prototype">
+						<property name="nomeField" value="id"/>
+						<property name="tipo" value="Integer"/>
+						<property name="notNull" value="true"/>
+					</bean>
+				</entry>
+				<entry key="nome">
+					<bean id="|F|Cliente_nome"
+					class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
+					scope="prototype">
+						<property name="nomeField" value="nome"/>
+						<property name="tipo" value="String"/>
+						<property name="notNull" value="true"/>
+					</bean>
+				</entry>
+				<entry key="CPF">
+					<bean id="|F|Cliente_cpf"
+					class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
+					scope="prototype">
+						<property name="nomeField" value="cpf"/>
+						<property name="tipo" value="String"/>
+						<property name="notNull" value="false"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- Diálogos iniciais -->
+	
 	<bean id="|D|Bem Vindo|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
 		scope="prototype">
@@ -32,9 +74,6 @@
 			</map>
 		</property>
 	</bean>
-
-
-	<!-- Schemas de passos -->
 
 	<bean id="|D|Menu|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
@@ -71,8 +110,7 @@
 		</property>
 	</bean>
 
-
-
+	
 
 
 

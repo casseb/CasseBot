@@ -37,7 +37,7 @@ public class KeyboardServiceTests {
     static class KeyboardTestContextConfiguration {
   
         @Bean
-        public KeyboardService botUserService() {
+        public KeyboardService keyboardService() {
             return new KeyboardServiceImpl();
         }
     }

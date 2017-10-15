@@ -1,7 +1,9 @@
 package br.com.simnetwork.BotByCasseb.model.entity.object;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 
@@ -29,9 +31,14 @@ public class Entity {
 	/**
 	 * Lista dos itens que estão presentes na entidade(tabela).
 	 */
-	private List<Record> itens = new LinkedList<>();
+	private Map<Object,Record> itens = new HashMap<Object,Record>();
 	/**
 	 * Schema que é usado como referência
 	 */
-	private EntitySchema dynamicEntitySchema;
+	@NonNull
+	private EntitySchema entitySchema;
+	
+	public void setItem(Object key, Record record) {
+		this.itens.put(key, record);
+	}
 }

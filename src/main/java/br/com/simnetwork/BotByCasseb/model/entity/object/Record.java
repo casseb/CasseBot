@@ -1,7 +1,9 @@
 package br.com.simnetwork.BotByCasseb.model.entity.object;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 
@@ -23,11 +25,13 @@ public class Record {
 	 * Chave do registro dinâmico.
 	 */
 	@Id @NonNull
-	private String chave;
+	private Object chave;
 	/**
 	 * Lista de campos que este registro possui.
 	 */
-	private List<Field> campos = new LinkedList<Field>();
+	private Map<String,Field> campos = new HashMap<String,Field>();
+	@NonNull
+	private String entityName;
 
 }
 

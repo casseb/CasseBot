@@ -1,5 +1,7 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +36,13 @@ public class BotUserServiceImpl implements BotUserService{
 
 	@Override
 	public void updateBotUserContact(BotUser botUser, Contact contact) {
-		botUser.setContact(contact);
+		botUser.setContact(contact.phoneNumber());
 		botUserRepo.save(botUser);
+	}
+
+	@Override
+	public List<BotUser> locateAllBotUsers() {
+		return botUserRepo.findAll();
 	}
 
 }

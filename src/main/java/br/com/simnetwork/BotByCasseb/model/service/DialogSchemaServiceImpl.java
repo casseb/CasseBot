@@ -1,5 +1,7 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,11 @@ public class DialogSchemaServiceImpl implements DialogSchemaService{
 	public DialogSchema findDialogSchemabyNomeSchema(String nomeSchema) {
 		DialogSchema dialogSchema = dialogSchemaRepo.findOne(nomeSchema);
 		return dialogSchema;
+	}
+
+	@Override
+	public List<DialogSchema> findAllDialogSchema() {
+		return dialogSchemaRepo.findAll();
 	}
 
 }

@@ -23,6 +23,7 @@ public class DialogSchema {
 
 	@Id @NonNull
 	private String nomeSchema;
+	private Boolean top;
 	private Map<Integer,DialogStepSchema> steps = new HashMap<>();
 	
 }

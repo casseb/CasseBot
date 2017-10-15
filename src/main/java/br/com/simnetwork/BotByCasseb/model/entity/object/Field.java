@@ -33,9 +33,11 @@ public class Field {
 	 * dynamicFieldSchema é usado como referência para realizar um cast tanto na
 	 * entrada quanto no uso do dado.
 	 */
-	private String value;
+	@NonNull
+	private Object value;
 	/**
 	 * Schema que é usado como referência
 	 */
-	private FieldSchema dynamicFieldSchema;
+	@NonNull
+	private FieldSchema fieldSchema;
 }

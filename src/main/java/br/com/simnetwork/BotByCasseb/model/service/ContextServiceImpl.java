@@ -67,18 +67,28 @@ public class ContextServiceImpl implements ContextService {
 	}
 
 	@Override
+	public int getDialogSchemasBeanDefinitionCount(boolean official) {
+		return getSchemasBeanDefinitionNamesByParameter("|D|",official).size();
+	}
+	
+	@Override
 	public List<String> getStepSchemasBeanDefinitionNames(boolean official) {
 		return getSchemasBeanDefinitionNamesByParameter("|S|",official);
 	}
 
 	@Override
-	public int getDialogSchemasBeanDefinitionCount(boolean official) {
-		return getSchemasBeanDefinitionNamesByParameter("|D|",official).size();
+	public int getStepSchemasBeanDefinitionCount(boolean official) {
+		return getSchemasBeanDefinitionNamesByParameter("|S|",official).size();
+	}
+	
+	@Override
+	public List<String> getEntitySchemasBeanDefinitionNames(boolean official) {
+		return getSchemasBeanDefinitionNamesByParameter("|E|",official);
 	}
 
 	@Override
-	public int getStepSchemasBeanDefinitionCount(boolean official) {
-		return getSchemasBeanDefinitionNamesByParameter("|S|",official).size();
+	public int getEntitySchemasBeanDefinitionCount(boolean official) {
+		return getSchemasBeanDefinitionNamesByParameter("|E|",official).size();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -100,5 +110,7 @@ public class ContextServiceImpl implements ContextService {
 			return null;
 		}
 	}
+
+	
 
 }

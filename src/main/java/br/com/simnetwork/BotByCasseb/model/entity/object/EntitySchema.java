@@ -1,7 +1,9 @@
 package br.com.simnetwork.BotByCasseb.model.entity.object;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 
@@ -9,6 +11,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 /**
  * Define a estrutura de uma tabela dinâmica.
@@ -17,7 +20,10 @@ import lombok.Setter;
  * @author <a href="mailto:felipe.casseb@gmail.com">By Casseb</a>
  * @since 1.5
  */
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@NoArgsConstructor
 public class EntitySchema {
 	
 	/**
@@ -28,10 +34,12 @@ public class EntitySchema {
 	/**
 	 * Lista de campos que esta entidade(tabela) terá.
 	 */
-	private List<FieldSchema> campos = new LinkedList<>();
+	@NonNull
+	private Map<String,FieldSchema> campos = new HashMap<String,FieldSchema>();
 	/**
 	 * Campo que será utilizado como chave do registro
 	 */
+	@NonNull
 	private String chave;
 	
 }
