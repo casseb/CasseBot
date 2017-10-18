@@ -30,6 +30,8 @@ import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DynamicListService;
 import br.com.simnetwork.BotByCasseb.model.service.DynamicListServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.EntityService;
+import br.com.simnetwork.BotByCasseb.model.service.EntityServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
 import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 
@@ -75,6 +77,11 @@ public class DialogServiceTests {
         public DynamicListService dynamicListService() {
             return new DynamicListServiceImpl();
         }
+        
+        @Bean
+		public EntityService entityService() {
+			return new EntityServiceImpl();
+		}
     }
 
 	@Autowired

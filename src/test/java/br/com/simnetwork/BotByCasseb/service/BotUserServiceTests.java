@@ -22,6 +22,20 @@ import br.com.simnetwork.BotByCasseb.TestSupport;
 import br.com.simnetwork.BotByCasseb.model.repository.BotUserRepository;
 import br.com.simnetwork.BotByCasseb.model.service.BotUserService;
 import br.com.simnetwork.BotByCasseb.model.service.BotUserServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.ContextService;
+import br.com.simnetwork.BotByCasseb.model.service.ContextServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
+import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DialogService;
+import br.com.simnetwork.BotByCasseb.model.service.DialogServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaService;
+import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DynamicListService;
+import br.com.simnetwork.BotByCasseb.model.service.DynamicListServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.EntityService;
+import br.com.simnetwork.BotByCasseb.model.service.EntityServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
+import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
@@ -30,10 +44,45 @@ public class BotUserServiceTests {
 	@TestConfiguration
     static class BotUserTestContextConfiguration {
   
+		@Bean
+        public DialogService dialogService() {
+            return new DialogServiceImpl();
+        }
+		
+		@Bean
+        public DialogStepSchemaService dialogStepSchemaService() {
+            return new DialogStepSchemaServiceImpl();
+        }
+		
+		@Bean
+        public DialogSchemaService dialogSchemaService() {
+            return new DialogSchemaServiceImpl();
+        }
+        
+        @Bean
+        public ContextService contextService() {
+            return new ContextServiceImpl();
+        }
+        
         @Bean
         public BotUserService botUserService() {
             return new BotUserServiceImpl();
         }
+        
+        @Bean
+        public KeyboardService keyboardService() {
+            return new KeyboardServiceImpl();
+        }
+        
+        @Bean
+        public DynamicListService dynamicListService() {
+            return new DynamicListServiceImpl();
+        }
+        
+        @Bean
+		public EntityService entityService() {
+			return new EntityServiceImpl();
+		}
     }
 
 	@Autowired

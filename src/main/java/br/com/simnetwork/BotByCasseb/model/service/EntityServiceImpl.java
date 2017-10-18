@@ -1,6 +1,8 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import br.com.simnetwork.BotByCasseb.model.entity.object.RecordStatus;
 import br.com.simnetwork.BotByCasseb.model.repository.EntityRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.EntitySchemaRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.FieldSchemaRepository;
+import br.com.simnetwork.BotByCasseb.model.repository.RecordRepository;
 
 @Service("entityService")
 public class EntityServiceImpl implements EntityService {
@@ -33,6 +36,8 @@ public class EntityServiceImpl implements EntityService {
 	private DialogSchemaService dialogSchemaService;
 	@Autowired
 	private ContextService contextService;
+	@Autowired
+	private RecordRepository recordRepo;
 
 	public void synchronizeStaticEntities() {
 		synchronizeBotUserEntity();
@@ -53,28 +58,12 @@ public class EntityServiceImpl implements EntityService {
 	}
 	
 	
-	public Record findByKey(String entityName, Object key) {
-		
-		Entity entity = entityRepo.findOne(entityName);
-		for(Record record : entity.getItens().values()) {
-			if(record.getChave().equals(key)) {
-				return record; 
-			}
-		}
-		return null;
-		
+	public Record findByKey(String entityName, String key) {
+		return recordRepo.findByEntityNameAndChave(entityName, key);
 	}
 	
-	public void deleteByKey(String entityName, Object key) {
-		Entity entity = entityRepo.findOne(entityName);
-		Map<Object,Record> itens = new HashMap<Object,Record>();
-		for(Record record : entity.getItens().values()) {
-			if(!record.getChave().equals(key)) {
-				itens.put(record.getChave(), record);
-			}
-		}
-		entity.setItens(itens);
-		entityRepo.save(entity);
+	public void deleteByKey(String entityName, String key) {
+		recordRepo.delete(findByKey(entityName,key));
 	}
 
 	public Object getValue(Record record, String fieldName) {
@@ -98,9 +87,7 @@ public class EntityServiceImpl implements EntityService {
 			Field field = record.getCampos().get(fieldName);
 			field.setValue(newValue);
 			record.getCampos().put(fieldName, field);
-			Entity entity = entityRepo.findOne(getEntity(record));
-			entity.setItem(record.getChave(), record);
-			entityRepo.save(entity);
+			recordRepo.save(record);
 			return true;
 		}else {
 			return false;
@@ -162,8 +149,39 @@ public class EntityServiceImpl implements EntityService {
 		}
 		return valueBotUser;
 	}
+	
+	public Record getRecord(Record record, String fieldName) {
+		Record valueRecord;
+		try {
+			valueRecord = (Record) getValue(record, fieldName);
+		} catch (Exception e) {
+			return null;
+		}
+		return valueRecord;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Record> getRecordList(Record record, String fieldName) {
+		List<Record> valueRecordList;
+		try {
+			valueRecordList = (List<Record>) getValue(record, fieldName);
+		} catch (Exception e) {
+			return null;
+		}
+		return valueRecordList;
+	}
 
-	private void synchronizeBotUserEntity() {
+	public Record findByKey(List<Record> records, Object key) {
+		for(Record record : records) {
+			if(record.getChave().equals(key)) {
+				return record;
+			}
+		}
+		return null;
+	}
+	
+
+	public void synchronizeBotUserEntity() {
 		entitySchemaRepo.delete("botUser");
 		entityRepo.delete("botUser");
 
@@ -186,7 +204,13 @@ public class EntityServiceImpl implements EntityService {
 			content.putIfAbsent("data", botUser);
 
 			insertRecord("botUser", content);
+			
+			content = new HashMap<String, Object>();
+			content.putIfAbsent("idTelegram", botUser.getId());
+			content.putIfAbsent("botUser", findByKey("botUser",botUser.getId().toString()));
+			insertRecord("Usuario",content);
 		}
+		
 
 	}
 
@@ -225,10 +249,12 @@ public class EntityServiceImpl implements EntityService {
 			return RecordStatus.ENTIDADE_INEXISTENTE;
 		}
 
-		Object key = content.get(entitySchema.getChave());
+		String key;
 
-		if (key == null) {
+		if (content.get(entitySchema.getChave()) == null) {
 			return RecordStatus.CHAVE_NULL;
+		}else {
+			key = content.get(entitySchema.getChave()).toString();
 		}
 
 		for (FieldSchema fieldSchema : fieldSchemaRepo.findByNotNull(true)) {
@@ -253,6 +279,7 @@ public class EntityServiceImpl implements EntityService {
 
 		Record record = new Record(key, entityName);
 		record.setCampos(fieldsRecord);
+		recordRepo.save(record);
 		entity.setItem(key, record);
 		entityRepo.save(entity);
 

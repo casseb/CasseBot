@@ -12,7 +12,7 @@ public interface EntityService {
 	
 	public void synchronizeStaticEntities();
 	public void synchronizeStaticEntitiesTest();
-	public Record findByKey(String entityName, Object key);
+	public Record findByKey(String entityName, String key);
 	public Object getValue(Record record, String fieldName);
 	public String getType(Record record, String fieldName);
 	public String getType(String entityName, String fieldName);
@@ -24,6 +24,7 @@ public interface EntityService {
 	public DialogSchema getDialogSchema(Record record, String fieldName);
 	public BotUser getBotUser(Record record, String fieldName);
 	public RecordStatus insertRecord(String entityName, Map<String, Object> content);
-	public void deleteByKey(String entityName, Object key);
+	public void deleteByKey(String entityName, String key);
+	public void synchronizeBotUserEntity();
 
 }

@@ -17,12 +17,15 @@ public class BotUserServiceImpl implements BotUserService{
 
 	@Autowired
 	private BotUserRepository botUserRepo;
+	@Autowired
+	private EntityService entityService;
 	
 	@Override
 	public BotUser createBotUser(User user) {
 		if(!botUserRepo.exists(user.id())){
 			BotUser botUser = new BotUser(user);
 			botUserRepo.save(botUser);
+			entityService.synchronizeBotUserEntity();
 			return botUser;
 		}else {
 			return botUserRepo.findOne(user.id());

@@ -25,7 +25,7 @@ public class Record {
 	 * Chave do registro dinâmico.
 	 */
 	@Id @NonNull
-	private Object chave;
+	private String chave;
 	/**
 	 * Lista de campos que este registro possui.
 	 */

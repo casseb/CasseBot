@@ -37,12 +37,4 @@ public class Start {
 		entityService.synchronizeStaticEntities();
 	}
 	
-	@PostConstruct
-	public void mapTest() {
-		Map<Object,String> map = new HashMap<Object,String>();
-		map.put(1, "Teste");
-		Object key = 1;
-		System.out.println(map.get(key));
-	}
-	
 }

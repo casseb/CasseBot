@@ -97,23 +97,23 @@ public class EntityServiceTests {
 	
 	@Test
 	public void findByKeyTest() {
-		assertNotNull(entityService.findByKey("TestEntity", 1));
+		assertNotNull(entityService.findByKey("TestEntity", 1+""));
 	}
 	
 	@Test
 	public void deleteByKeyTest() {
-		entityService.deleteByKey("TestEntity", 1);
-		assertNull(entityService.findByKey("TestEntity", 1));
+		entityService.deleteByKey("TestEntity", 1+"");
+		assertNull(entityService.findByKey("TestEntity", 1+""));
 	}
 	
 	@Test
 	public void getValueTest() {
-		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1), "nome"));
+		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1+""), "nome"));
 	}
 	
 	@Test
 	public void getTypeRecordTest() {
-		assertEquals("String",entityService.getType(entityService.findByKey("TestEntity", 1),"nome"));
+		assertEquals("String",entityService.getType(entityService.findByKey("TestEntity", 1+""),"nome"));
 	}
 	
 	@Test
@@ -123,14 +123,14 @@ public class EntityServiceTests {
 	
 	@Test
 	public void getEntityTest() {
-		assertEquals("TestEntity",entityService.getEntity(entityService.findByKey("TestEntity", 1)));
+		assertEquals("TestEntity",entityService.getEntity(entityService.findByKey("TestEntity", 1+"")));
 	}
 	
 	@Test
 	public void setValueTest() {
-		entityService.setValue(entityService.findByKey("TestEntity", 1), "nome", "NomeAlt");
-		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1), "nome"));
-		assertEquals("NomeAlt",entityService.getString(entityService.findByKey("TestEntity", 1), "nome"));
+		entityService.setValue(entityService.findByKey("TestEntity", 1+""), "nome", "NomeAlt");
+		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1+""), "nome"));
+		assertEquals("NomeAlt",entityService.getString(entityService.findByKey("TestEntity", 1+""), "nome"));
 	}
 	
 	@Test
@@ -138,15 +138,15 @@ public class EntityServiceTests {
 		String testeS = "teste";
 		Integer testeI = 123;
 		
-		//assertTrue("Integer em Integer",entityService.validateValue(entityService.findByKey("TestEntity", 1), "id", testeI));
-		//assertTrue("String em String",entityService.validateValue(entityService.findByKey("TestEntity", 1), "nome", testeS));
+		assertTrue("Integer em Integer",entityService.validateValue(entityService.findByKey("TestEntity", 1+""), "id", testeI));
+		assertTrue("String em String",entityService.validateValue(entityService.findByKey("TestEntity", 1+""), "nome", testeS));
 		
-		assertFalse("Integer em String",entityService.validateValue(entityService.findByKey("TestEntity", 1), "id", testeS));
+		assertFalse("Integer em String",entityService.validateValue(entityService.findByKey("TestEntity", 1+""), "id", testeS));
 	}
 	
 	@Test
 	public void getStringTest() {
-		assertEquals("Casseb",entityService.getString(entityService.findByKey("TestEntity", 1), "nome"));
+		assertEquals("Casseb",entityService.getString(entityService.findByKey("TestEntity", 1+""), "nome"));
 	}
 
 }
