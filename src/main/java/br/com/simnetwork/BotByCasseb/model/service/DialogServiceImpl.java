@@ -94,9 +94,11 @@ public class DialogServiceImpl implements DialogService {
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONTACT)) {
 				if (message.contact() == null) {
 					executeRequestContact(botUser, dialogStepSchema);
+					executeAgain = false;
 				} else {
 					if (!message.contact().userId().equals(botUser.getId())) {
 						executeRequestContact(botUser, dialogStepSchema);
+						executeAgain = false;
 					} else {
 						botUserService.updateBotUserContact(botUser, message.contact());
 						executeAgain = true;
@@ -109,6 +111,7 @@ public class DialogServiceImpl implements DialogService {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					executeSchemaSimpleMessage(botUser, dialogStepSchema, keyboard);
 					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
+					executeAgain = false;
 				} else {
 					dialog.addDecision(dialogStepSchema.getKey(), message.text());
 					dialog.setDialogStatus(DialogStatus.INICIO);
@@ -132,6 +135,7 @@ public class DialogServiceImpl implements DialogService {
 				if(!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
 					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
+					executeAgain = false;
 				}else {
 					if(callBackData != null) {
 						dialog.addDecision(dialogStepSchema.getKey(), callBackData);
@@ -139,9 +143,56 @@ public class DialogServiceImpl implements DialogService {
 						executeAgain = true;
 					}else {
 						executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
+						executeAgain = false;
 					}
 					
 				}
+			}
+			
+			//Requisição de confirmação dos dados
+			if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONFIRMATION)) {
+				if(!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
+					
+					StringBuilder updatedMessage = new StringBuilder();
+					updatedMessage.append(dialogStepSchema.getBotMessage());
+					updatedMessage.append("\n\n");
+					for(String decisionKey : dialog.getDecisions().keySet()) {
+						updatedMessage.append(decisionKey + " : " + dialog.getDecisions().get(decisionKey)+"\n");
+					}
+					dialogStepSchema.setBotMessage(updatedMessage.toString());
+					
+					List<String> options = new LinkedList<String>();
+					options.add("Sim");
+					options.add("Não");
+					inlineKeyboard = keyboardService.getSimpleInlineKeyboard(options);
+					
+					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
+					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
+					executeAgain = false;
+				}else {
+					if(callBackData != null) {
+						if(callBackData.equals("Sim")) {
+							dialog.setDialogStatus(DialogStatus.INICIO);
+							executeAgain = true;
+						}else {
+							executeCustomSimpleMessage(botUser,"Ação cancelada",keyboard);
+							dialog.setDialogStatus(DialogStatus.FIM);
+						}
+					}else {
+						executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
+						executeAgain = false;
+					}
+				}
+			}
+			
+			//Insert de registro no banco
+			if (dialogStepSchema.getStepType().equals(StepType.INSERT)) {
+				
+			}
+			
+			//Conferindo fim do diálogo
+			if (dialog.getDialogStatus().equals(DialogStatus.FIM)) {
+				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
 			}
 
 			// Avanço do passo
@@ -150,15 +201,18 @@ public class DialogServiceImpl implements DialogService {
 			}
 
 			// Oficialização das mudanças do diálogo
-			if (dialogSchema.getSteps().get(dialog.getCurrentStep()) == null) {
-				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
-				executeAgain = false;
-			} else {
-				dialogRepo.save(dialog);
-				dialogStepSchema = dialog.getDialogSchema().getSteps().get(dialog.getCurrentStep());
-				keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
-				inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
+			if(!dialog.getDialogStatus().equals(DialogStatus.FIM)) {
+				if (dialogSchema.getSteps().get(dialog.getCurrentStep()) == null) {
+					dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
+					executeAgain = false;
+				} else {
+					dialogRepo.save(dialog);
+					dialogStepSchema = dialog.getDialogSchema().getSteps().get(dialog.getCurrentStep());
+					keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
+					inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
+				}
 			}
+			
 
 		} while (executeAgain);
 

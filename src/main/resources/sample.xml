@@ -12,7 +12,7 @@
 						scope="prototype">
 						<property name="nomeStep" value="|S|TestGetString|" />
 						<property name="botMessage" value="Digite uma String qualquer" />
-						<property name="StepType" value="REQUESTSTRING" />
+						<property name="stepType" value="REQUESTSTRING" />
 						<property name="key" value="s1" />
 					</bean>
 				</entry>
@@ -23,7 +23,34 @@
 						<property name="nomeStep" value="|S|TestCustomMessage|" />
 						<property name="botMessage"
 							value="Você digitou {{{s1}}} no passo anterior by casseb" />
-						<property name="StepType" value="CUSTOMMESSAGE" />
+						<property name="stepType" value="CUSTOMMESSAGE" />
+					</bean>
+				</entry>
+				<entry key="1">
+					<bean id="|S|Menu01|"
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Menu01|" />
+						<property name="botMessage" value="Digite uma String qualquer" />
+						<property name="stepType" value="REQUESTINLINEOPTION" />
+						<property name="key" value="s1" />
+						<property name="dynamicList">
+							<bean id="dynamicList" class="br.com.simnetwork.BotByCasseb.model.entity.object.DynamicList">
+								<property name="beanType" value="D"/>
+							</bean>
+						</property>
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean id="|S|TestCreateClient|"
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+
+						<property name="nomeStep" value="|S|TestCreateClient|" />
+						<property name="botMessage" value="Inserindo cliente" />
+						<property name="stepType" value="INSERT" />
+						<property name="entity" value="Cliente" />
+
 					</bean>
 				</entry>
 			</map>

@@ -36,6 +36,7 @@ public class DialogStepSchema {
 	private List<String> inlineKeyboard = new LinkedList<>();
 	private DynamicList dynamicList;
 	private String key;
+	private String entity;
 	
 	
 }
