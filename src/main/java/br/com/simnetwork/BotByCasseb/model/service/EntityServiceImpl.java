@@ -1,6 +1,7 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import br.com.simnetwork.BotByCasseb.model.entity.object.Record;
 import br.com.simnetwork.BotByCasseb.model.entity.object.RecordStatus;
 import br.com.simnetwork.BotByCasseb.model.repository.EntityRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.EntitySchemaRepository;
+import br.com.simnetwork.BotByCasseb.model.repository.FieldRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.FieldSchemaRepository;
 import br.com.simnetwork.BotByCasseb.model.repository.RecordRepository;
 
@@ -38,6 +40,10 @@ public class EntityServiceImpl implements EntityService {
 	private ContextService contextService;
 	@Autowired
 	private RecordRepository recordRepo;
+	@Autowired
+	private DecisionService decisionService;
+	@Autowired
+	private FieldRepository fieldRepo;
 
 	public void synchronizeStaticEntities() {
 		synchronizeBotUserEntity();
@@ -60,6 +66,26 @@ public class EntityServiceImpl implements EntityService {
 	
 	public Record findByKey(String entityName, String key) {
 		return recordRepo.findByEntityNameAndChave(entityName, key);
+	}
+	
+	
+	public List<Record> findByFields(String entityName, Map<String,String> decisions){
+		decisions = decisionService.getDecisionsFilter(decisions, "query:");
+		HashSet<Record> result = new HashSet<Record>();
+		if(!decisions.isEmpty()) {
+			for(String key : decisions.keySet()) {
+				List<Field> fields = fieldRepo.findByNomeFieldAndValue(key, decisions.get(key));
+				for(Field field : fields) {
+					Record record = findByKey(entityName,field.getKey());
+					result.add(record);
+				}
+			}
+			List<Record> resultRecord = new LinkedList<Record>(result);
+			return resultRecord;
+		}else {
+			return recordRepo.findByEntityName(entityName);
+		}
+		
 	}
 	
 	public void deleteByKey(String entityName, String key) {
@@ -272,8 +298,9 @@ public class EntityServiceImpl implements EntityService {
 
 			Object fieldValue = content.get(fieldSchema.getNomeField());
 			if (fieldValue != null) {
-				fieldsRecord.put(fieldSchema.getNomeField(),
-						new Field(fieldSchema.getNomeField(), fieldValue, fieldSchema));
+				Field field = new Field(fieldSchema.getNomeField(), fieldValue, fieldSchema, key);
+				fieldRepo.save(field);
+				fieldsRecord.put(fieldSchema.getNomeField(),field);
 			}
 		}
 
@@ -285,6 +312,17 @@ public class EntityServiceImpl implements EntityService {
 
 		return RecordStatus.SUCESSO;
 
+	}
+
+	@Override
+	public RecordStatus insertRecordString(String entity, Map<String, String> decisions) {
+		Map<String,Object> content = new HashMap<String,Object>();
+		
+		for(String key : decisions.keySet()) {
+			content.put(key, decisions.get(key));
+		}
+		
+		return insertRecord(entity,content);
 	}
 
 

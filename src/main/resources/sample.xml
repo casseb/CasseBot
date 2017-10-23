@@ -56,3 +56,83 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="|D|Menu|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Menu|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|TestGetString|" />
+						<property name="botMessage" value="Digite o nome do cliente" />
+						<property name="stepType" value="REQUESTSTRING" />
+						<property name="key" value="nome" />
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|REQUESTCONFIRMATION" />
+				</entry>
+				<entry key="3">
+					<bean 
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+
+						<property name="nomeStep" value="|S|TestCreateClient|" />
+						<property name="botMessage" value="Inserindo cliente" />
+						<property name="stepType" value="INSERT" />
+						<property name="entity" value="Cliente" />
+
+					</bean>
+				</entry>
+				<entry key="4">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|TestGetStringQuery|" />
+						<property name="botMessage" value="Digite o nome do cliente para buscar" />
+						<property name="stepType" value="REQUESTSTRING" />
+						<property name="key" value="query:nome" />
+					</bean>
+				</entry>
+				<entry key="5">
+					<bean 
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+
+						<property name="nomeStep" value="|S|TestCreateClient|" />
+						<property name="botMessage" value="Selecione o cliente consultado" />
+						<property name="stepType" value="REQUESTRECORD" />
+						<property name="entity" value="Cliente" />
+						<property name="key" value="record:Cliente"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	
+	<!-- Exemplo de entidade -->
+	
+	<bean id="|E|Cliente|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.object.EntitySchema"
+		scope="prototype">
+		<property name="nomeEntity" value="Cliente" />
+		<property name="chave" value="nome" />
+		<property name="campos">
+			<map>
+				<entry key="Nome">
+					<bean id="|F|Cliente_nome"
+						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
+						scope="prototype">
+						<property name="nomeField" value="nome" />
+						<property name="tipo" value="String" />
+						<property name="notNull" value="true" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>

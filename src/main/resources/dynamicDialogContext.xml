@@ -3,5 +3,155 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans">
-	
+
+	<import resource="staticDialogContext.xml" />
+
+	<!-- Entidades -->
+
+	<bean id="|E|Cliente|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.object.EntitySchema"
+		scope="prototype">
+		<property name="nomeEntity" value="Cliente" />
+		<property name="chave" value="Nome Fantasia" />
+		<property name="campos">
+			<map>
+				<entry key="Nome Fantasia">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
+						scope="prototype">
+						<property name="nomeField" value="Nome Fantasia" />
+						<property name="tipo" value="String" />
+						<property name="notNull" value="true" />
+					</bean>
+				</entry>
+				<entry key="Telefone">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
+						scope="prototype">
+						<property name="nomeField" value="Telefone" />
+						<property name="tipo" value="String" />
+						<property name="notNull" value="true" />
+					</bean>
+				</entry>
+				<entry key="E-mail">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
+						scope="prototype">
+						<property name="nomeField" value="E-mail" />
+						<property name="tipo" value="String" />
+						<property name="notNull" value="false" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- Diálogos -->
+
+	<bean id="|D|Cliente|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Cliente|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Cliente01|" />
+						<property name="botMessage" value="O que deseja fazer?" />
+						<property name="stepType" value="REQUESTINLINEOPTION" />
+						<property name="key" value="dialog:dialog" />
+						<property name="inlineKeyboard">
+							<list>
+								<value>Cadastrar Cliente</value>
+								<value>Consultar Cliente</value>
+							</list>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|LINK" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="|D|Cadastrar Cliente|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Cadastrar Cliente|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Cadastrar Cliente01|" />
+						<property name="botMessage" value="Qual o nome do novo CLiente?" />
+						<property name="stepType" value="REQUESTSTRING" />
+						<property name="key" value="Nome Fantasia" />
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Cadastrar Cliente02|" />
+						<property name="botMessage" value="Qual o telefone do novo CLiente?" />
+						<property name="stepType" value="REQUESTSTRING" />
+						<property name="key" value="Telefone" />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Cadastrar Cliente03|" />
+						<property name="botMessage" value="Qual o E-mail do novo CLiente?" />
+						<property name="stepType" value="REQUESTSTRING" />
+						<property name="key" value="E-mail" />
+					</bean>
+				</entry>
+				<entry key="4">
+					<bean parent="|S|REQUESTCONFIRMATION" />
+				</entry>
+				<entry key="5">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+
+						<property name="nomeStep" value="|S|Cadastrar Cliente05|" />
+						<property name="botMessage" value="Inserindo cliente" />
+						<property name="stepType" value="INSERT" />
+						<property name="entity" value="Cliente" />
+
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="|D|Consultar Cliente|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Consultar Cliente|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Consultar Cliente01|" />
+						<property name="botMessage" value="Escolha o cliente" />
+						<property name="stepType" value="REQUESTRECORD" />
+						<property name="entity" value="Cliente" />
+						<property name="key" value="record:Cliente" />
+					</bean>
+				</entry>
+				
+			</map>
+		</property>
+	</bean>
+
 </beans>

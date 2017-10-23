@@ -1,5 +1,6 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
+import java.util.List;
 import java.util.Map;
 
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema;
@@ -26,5 +27,7 @@ public interface EntityService {
 	public RecordStatus insertRecord(String entityName, Map<String, Object> content);
 	public void deleteByKey(String entityName, String key);
 	public void synchronizeBotUserEntity();
+	public RecordStatus insertRecordString(String entity, Map<String, String> decisions);
+	public List<Record> findByFields(String entityName, Map<String,String> decisions);
 
 }

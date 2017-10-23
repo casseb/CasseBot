@@ -1,9 +1,12 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators.Switch;
 import org.springframework.stereotype.Service;
 
 import com.pengrad.telegrambot.model.Message;
@@ -19,6 +22,8 @@ import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSch
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.StepType;
 import br.com.simnetwork.BotByCasseb.model.entity.object.Bot;
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
+import br.com.simnetwork.BotByCasseb.model.entity.object.Record;
+import br.com.simnetwork.BotByCasseb.model.entity.object.RecordStatus;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogRepository;
 
 @Service("dialogService")
@@ -34,6 +39,10 @@ public class DialogServiceImpl implements DialogService {
 	private KeyboardService keyboardService;
 	@Autowired
 	private DialogStepSchemaService dialogStepSchemaService;
+	@Autowired
+	private EntityService entityService;
+	@Autowired
+	private DecisionService decisionService;
 
 	@Override
 	public void decideDialog(Update update) {
@@ -52,7 +61,7 @@ public class DialogServiceImpl implements DialogService {
 		if (dialogRepo.findByBotUserId(botUser.getId()) == null) {
 			createDialog(user, dialogSchemaService.findDialogSchemabyNomeSchema("|D|Menu|"));
 		}
-		executeDialog(user,message,callBackData);
+		executeDialog(user, message, callBackData);
 
 	}
 
@@ -132,65 +141,122 @@ public class DialogServiceImpl implements DialogService {
 
 			// Requisição de escolha inline
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTINLINEOPTION)) {
-				if(!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
+				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
 					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
 					executeAgain = false;
-				}else {
-					if(callBackData != null) {
+				} else {
+					if (callBackData != null) {
 						dialog.addDecision(dialogStepSchema.getKey(), callBackData);
 						dialog.setDialogStatus(DialogStatus.INICIO);
 						executeAgain = true;
-					}else {
+					} else {
 						executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
 						executeAgain = false;
 					}
-					
+
 				}
 			}
-			
-			//Requisição de confirmação dos dados
+
+			// Requisição de confirmação dos dados
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONFIRMATION)) {
-				if(!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
-					
+				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
+
 					StringBuilder updatedMessage = new StringBuilder();
 					updatedMessage.append(dialogStepSchema.getBotMessage());
 					updatedMessage.append("\n\n");
-					for(String decisionKey : dialog.getDecisions().keySet()) {
-						updatedMessage.append(decisionKey + " : " + dialog.getDecisions().get(decisionKey)+"\n");
+					for (String decisionKey : dialog.getDecisions().keySet()) {
+						updatedMessage.append(decisionKey + " : " + dialog.getDecisions().get(decisionKey) + "\n");
 					}
 					dialogStepSchema.setBotMessage(updatedMessage.toString());
-					
+
 					List<String> options = new LinkedList<String>();
 					options.add("Sim");
 					options.add("Não");
 					inlineKeyboard = keyboardService.getSimpleInlineKeyboard(options);
-					
+
 					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
 					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
 					executeAgain = false;
-				}else {
-					if(callBackData != null) {
-						if(callBackData.equals("Sim")) {
+				} else {
+					if (callBackData != null) {
+						if (callBackData.equals("Sim")) {
 							dialog.setDialogStatus(DialogStatus.INICIO);
 							executeAgain = true;
-						}else {
-							executeCustomSimpleMessage(botUser,"Ação cancelada",keyboard);
+						} else {
+							executeCustomSimpleMessage(botUser, "Ação cancelada", keyboard);
 							dialog.setDialogStatus(DialogStatus.FIM);
 						}
-					}else {
+					} else {
 						executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
 						executeAgain = false;
 					}
 				}
 			}
-			
-			//Insert de registro no banco
+
+			// Insert de registro no banco
 			if (dialogStepSchema.getStepType().equals(StepType.INSERT)) {
+				RecordStatus recordStatus = entityService.insertRecordString(dialogStepSchema.getEntity(),
+						dialog.getDecisions());
+				
+				switch (recordStatus) {
+				case SUCESSO:
+					executeCustomSimpleMessage(botUser, "Registro salvo com sucesso", null);
+					break;
+				case ENTIDADE_INEXISTENTE:
+					executeCustomSimpleMessage(botUser, "Não foi definido a estrutura desta entidade no XML", null);
+					break;
+				case CAMPO_OBRIGATORIO_NULL:
+					executeCustomSimpleMessage(botUser, "Não foi informado todos os campos obrigatórios", null);
+					break;
+				case CHAVE_NULL:
+					executeCustomSimpleMessage(botUser, "Não foi informado a chave do registro", null);
+					break;
+				default:
+					break;
+				}
+				
+				executeAgain = true;
 				
 			}
 			
-			//Conferindo fim do diálogo
+			// Requisição de Record
+			if (dialogStepSchema.getStepType().equals(StepType.REQUESTRECORD)) {
+				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
+					List<Record> records = entityService.findByFields(dialogStepSchema.getEntity(), dialog.getDecisions());
+					executeRequestInlineOption(botUser, dialogStepSchema, keyboardService.getRecordInlineKeyboard(records));
+					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
+					executeAgain = false;
+				} else {
+					if (callBackData != null) {
+						dialog.addDecision(dialogStepSchema.getKey(), callBackData);
+						dialog.setDialogStatus(DialogStatus.INICIO);
+						executeAgain = true;
+					} else {
+						executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
+						executeAgain = false;
+					}
+
+				}
+			}
+			
+			// Link de um diálogo para outro
+			if (dialogStepSchema.getStepType().equals(StepType.LINK)) {
+				String dialogName = decisionService.getDecisionsFilter(dialog.getDecisions(), "dialog:").get("unico");
+				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
+				dialogName = "|D|"+dialogName+"|";
+				dialogSchema = dialogSchemaService.findDialogSchemabyNomeSchema(dialogName);
+				createDialog(user, dialogSchema);
+				dialog = dialogRepo.findOne(botUser);
+				dialogSchema = dialog.getDialogSchema();
+				dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
+				keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
+				inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
+				dialog.setCurrentStep(0);
+				executeAgain = true;
+			}	
+			
+			// Conferindo fim do diálogo
 			if (dialog.getDialogStatus().equals(DialogStatus.FIM)) {
 				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
 			}
@@ -201,7 +267,7 @@ public class DialogServiceImpl implements DialogService {
 			}
 
 			// Oficialização das mudanças do diálogo
-			if(!dialog.getDialogStatus().equals(DialogStatus.FIM)) {
+			if (!dialog.getDialogStatus().equals(DialogStatus.FIM)) {
 				if (dialogSchema.getSteps().get(dialog.getCurrentStep()) == null) {
 					dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
 					executeAgain = false;
@@ -212,7 +278,6 @@ public class DialogServiceImpl implements DialogService {
 					inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
 				}
 			}
-			
 
 		} while (executeAgain);
 
@@ -234,8 +299,9 @@ public class DialogServiceImpl implements DialogService {
 	private void executeRequestContact(BotUser botUser, DialogStepSchema dialogStepSchema) {
 		Bot.requestContact(botUser.getId().toString(), dialogStepSchema.getBotMessage());
 	}
-	
-	private void executeRequestInlineOption(BotUser botUser, DialogStepSchema dialogStepSchema, InlineKeyboardMarkup keyboard){
+
+	private void executeRequestInlineOption(BotUser botUser, DialogStepSchema dialogStepSchema,
+			InlineKeyboardMarkup keyboard) {
 		Bot.requestInlineOption(botUser.getId().toString(), dialogStepSchema.getBotMessage(), keyboard);
 	}
 

@@ -44,26 +44,6 @@
 		</property>
 	</bean>
 
-	<bean id="|E|Cliente|"
-		class="br.com.simnetwork.BotByCasseb.model.entity.object.EntitySchema"
-		scope="prototype">
-		<property name="nomeEntity" value="Cliente" />
-		<property name="chave" value="nome" />
-		<property name="campos">
-			<map>
-				<entry key="Nome">
-					<bean id="|F|Cliente_nome"
-						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
-						scope="prototype">
-						<property name="nomeField" value="nome" />
-						<property name="tipo" value="String" />
-						<property name="notNull" value="true" />
-					</bean>
-				</entry>
-			</map>
-		</property>
-	</bean>
-
 	<!-- Diálogos iniciais -->
 
 	<bean id="|D|Bem Vindo|"
@@ -105,27 +85,51 @@
 					<bean
 						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 						scope="prototype">
-						<property name="nomeStep" value="|S|TestGetString|" />
-						<property name="botMessage" value="Digite o nome do cliente" />
-						<property name="stepType" value="REQUESTSTRING" />
-						<property name="key" value="s1" />
+						<property name="nomeStep" value="|S|Menu01|" />
+						<property name="botMessage" value="Escolha o que deseja fazer" />
+						<property name="stepType" value="REQUESTINLINEOPTION" />
+						<property name="key" value="dialog:dialog" />
+						<property name="inlineKeyboard">
+							<list>
+								<value>Hello World</value>
+								<value>Cliente</value>
+							</list>
+						</property>
 					</bean>
 				</entry>
 				<entry key="2">
-					<bean parent="|S|REQUESTCONFIRMATION" />
+					<bean parent="|S|LINK" />
 				</entry>
-				<entry key="3">
-					<bean id="|S|TestCustomMessage|"
+			</map>
+		</property>
+	</bean>
+
+	<!-- Diálogos Principais -->
+
+	<bean id="|D|Hello World|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Hello World|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
 						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 						scope="prototype">
-						<property name="nomeStep" value="|S|TestCustomMessage|" />
-						<property name="botMessage"
-							value="Você digitou {{{s1}}} no passo anterior by casseb" />
-						<property name="stepType" value="CUSTOMMESSAGE" />
+						<property name="nomeStep" value="|S|Hello World01|" />
+						<property name="botMessage" value="Hello World" />
+						<property name="stepType" value="SIMPLEMESSAGE" />
 					</bean>
 				</entry>
 			</map>
 		</property>
+	</bean>
+
+	<!-- Listas Padrões -->
+
+	<bean id="|L|ALLDIALOGS"
+		class="br.com.simnetwork.BotByCasseb.model.entity.object.DynamicList">
+		<property name="beanType" value="D" />
 	</bean>
 
 	<!-- Steps -->
@@ -138,6 +142,11 @@
 		<property name="stepType" value="REQUESTCONFIRMATION" />
 	</bean>
 
-
+	<bean id="|S|LINK"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+		scope="prototype">
+		<property name="nomeStep" value="|S|LINK|" />
+		<property name="stepType" value="LINK" />
+	</bean>
 
 </beans>

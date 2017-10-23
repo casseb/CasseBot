@@ -12,6 +12,8 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 
+import br.com.simnetwork.BotByCasseb.model.entity.object.Record;
+
 @Service("keyboardService")
 public class KeyboardServiceImpl implements KeyboardService {
 
@@ -41,6 +43,7 @@ public class KeyboardServiceImpl implements KeyboardService {
 		}
 		return new InlineKeyboardMarkup(buttons);
 	}
+	
 
 	private Map<Integer, String[]> prepareKeyboard(List<String> strings) {
 		Map<Integer, String[]> map = new HashMap<Integer, String[]>();
@@ -116,6 +119,15 @@ public class KeyboardServiceImpl implements KeyboardService {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public InlineKeyboardMarkup getRecordInlineKeyboard(List<Record> records) {
+		List<String> inlineOptions = new LinkedList<>();
+		for(Record record : records) {
+			inlineOptions.add(record.getChave());
+		}
+		return getSimpleInlineKeyboard(inlineOptions);
 	}
 
 	

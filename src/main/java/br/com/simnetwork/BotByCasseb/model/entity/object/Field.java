@@ -40,4 +40,7 @@ public class Field {
 	 */
 	@NonNull
 	private FieldSchema fieldSchema;
+	
+	@NonNull
+	private String key;
 }
