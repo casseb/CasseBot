@@ -21,6 +21,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 
 import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
+import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 
 public class Bot {
 	
@@ -28,8 +29,9 @@ public class Bot {
 	private static TelegramBot bot = TelegramBotAdapter.build(token);
 	
 	public static void sendMessage(String chatId, String text, Keyboard keyboard) {
+		KeyboardServiceImpl keyboardService = new KeyboardServiceImpl();
 		if(keyboard == null) {
-			bot.execute(new SendMessage(chatId, text).replyMarkup(new ReplyKeyboardRemove()));
+			bot.execute(new SendMessage(chatId, text).replyMarkup(keyboardService.getDefaultKeyboard()));
 		}else {
 			bot.execute(new SendMessage(chatId, text).replyMarkup(keyboard));
 		}

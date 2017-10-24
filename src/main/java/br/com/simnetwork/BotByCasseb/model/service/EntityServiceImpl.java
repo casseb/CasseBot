@@ -293,12 +293,17 @@ public class EntityServiceImpl implements EntityService {
 		if(entity == null) {
 			entity = new Entity(entityName,entitySchema);
 		}
+		
 		Map<String, Field> fieldsRecord = new HashMap<String, Field>();
 		for (FieldSchema fieldSchema : entitySchema.getCampos().values()) {
 
 			Object fieldValue = content.get(fieldSchema.getNomeField());
 			if (fieldValue != null) {
 				Field field = new Field(fieldSchema.getNomeField(), fieldValue, fieldSchema, key);
+				fieldRepo.save(field);
+				fieldsRecord.put(fieldSchema.getNomeField(),field);
+			}else if(fieldSchema.getDefaultValue() != null) {
+				Field field = new Field(fieldSchema.getNomeField(), fieldSchema.getDefaultValue(), fieldSchema, key);
 				fieldRepo.save(field);
 				fieldsRecord.put(fieldSchema.getNomeField(),field);
 			}

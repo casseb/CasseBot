@@ -37,6 +37,7 @@ public class DialogStepSchema {
 	private DynamicList dynamicList;
 	private String key;
 	private String entity;
+	private List<String> parameters;
 	
 	
 }

@@ -22,6 +22,7 @@ import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSch
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.StepType;
 import br.com.simnetwork.BotByCasseb.model.entity.object.Bot;
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
+import br.com.simnetwork.BotByCasseb.model.entity.object.Field;
 import br.com.simnetwork.BotByCasseb.model.entity.object.Record;
 import br.com.simnetwork.BotByCasseb.model.entity.object.RecordStatus;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogRepository;
@@ -244,7 +245,11 @@ public class DialogServiceImpl implements DialogService {
 			if (dialogStepSchema.getStepType().equals(StepType.LINK)) {
 				String dialogName = decisionService.getDecisionsFilter(dialog.getDecisions(), "dialog:").get("unico");
 				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
-				dialogName = "|D|"+dialogName+"|";
+				if(dialogStepSchema.getEntity()==null) {
+					dialogName = "|D|"+dialogName+"|";
+				}else {
+					dialogName = "|D|"+dialogName+" "+dialogStepSchema.getEntity()+"|";
+				}
 				dialogSchema = dialogSchemaService.findDialogSchemabyNomeSchema(dialogName);
 				createDialog(user, dialogSchema);
 				dialog = dialogRepo.findOne(botUser);
@@ -254,7 +259,29 @@ public class DialogServiceImpl implements DialogService {
 				inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
 				dialog.setCurrentStep(0);
 				executeAgain = true;
-			}	
+			}
+			
+			// Mostra os dados de um record
+			if (dialogStepSchema.getStepType().equals(StepType.SHOWRECORD)) {
+				String recordKey = decisionService.getDecisionsFilter(dialog.getDecisions(), "record:").get("unico");
+				String entityName = dialogStepSchema.getEntity();
+				Record record = entityService.findByKey(entityName, recordKey);
+				StringBuilder resposta = new StringBuilder();
+				resposta.append("Registro "+record.getChave()+"\n\n");
+				for(String key : record.getCampos().keySet()) {
+					resposta.append(key);
+					resposta.append(" : ");
+					if(record.getCampos().get(key).getValue().equals("True")) {
+						resposta.append("Sim");
+					}else if(record.getCampos().get(key).getValue().equals("False")) {
+						resposta.append("Não");
+					}else {
+						resposta.append(record.getCampos().get(key).getValue());
+					}
+					resposta.append("\n");
+				}
+				executeCustomSimpleMessage(botUser, resposta.toString(), null);
+			}
 			
 			// Conferindo fim do diálogo
 			if (dialog.getDialogStatus().equals(DialogStatus.FIM)) {

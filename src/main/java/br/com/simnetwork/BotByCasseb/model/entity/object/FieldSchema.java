@@ -49,6 +49,7 @@ public class FieldSchema {
 	 */
 	@NonNull
 	private Boolean notNull;
+	private Object defaultValue;
 	
 	
 }

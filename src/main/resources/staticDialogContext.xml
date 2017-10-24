@@ -93,6 +93,7 @@
 							<list>
 								<value>Hello World</value>
 								<value>Cliente</value>
+								<value>Sugestão</value>
 							</list>
 						</property>
 					</bean>
