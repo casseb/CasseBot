@@ -25,7 +25,11 @@ import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 
 public class Bot {
 	
-	private static String token = "458418970:AAFyGBLikv8aspD06Udgq3mnMclJvEHauoI";
+	//Testes
+	//private static String token = "458418970:AAFyGBLikv8aspD06Udgq3mnMclJvEHauoI";
+	
+	//Oficial
+	private static String token = "464923665:AAH80Oct2iu4Lg8ax6ThS5w9NmXJ8Ew-0Wk";
 	private static TelegramBot bot = TelegramBotAdapter.build(token);
 	
 	public static void sendMessage(String chatId, String text, Keyboard keyboard) {
