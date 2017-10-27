@@ -122,7 +122,7 @@ public class KeyboardServiceImpl implements KeyboardService {
 		List<InlineKeyboardButton> buttons = new LinkedList<InlineKeyboardButton>();
 		
 		for(String string : strings) {
-			buttons.add(new InlineKeyboardButton(string));
+			buttons.add(new InlineKeyboardButton(string).callbackData(string));
 		}
 		
 		if (strings.size() != 0) {

@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: prod
+    active: dev
     
 bot:
   token: 464923665:AAH80Oct2iu4Lg8ax6ThS5w9NmXJ8Ew-0Wk
