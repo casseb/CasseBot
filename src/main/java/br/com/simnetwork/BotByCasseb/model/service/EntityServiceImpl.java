@@ -71,7 +71,7 @@ public class EntityServiceImpl implements EntityService {
 	
 	public List<Record> findByFields(String entityName, Map<String,String> decisions){
 		decisions = decisionService.getDecisionsFilter(decisions, "query:");
-		HashSet<Record> result = new HashSet<Record>();
+		List<Record> result = new LinkedList<Record>();
 		if(!decisions.isEmpty()) {
 			for(String key : decisions.keySet()) {
 				List<Field> fields = fieldRepo.findByNomeFieldAndValue(key, decisions.get(key));
@@ -80,8 +80,7 @@ public class EntityServiceImpl implements EntityService {
 					result.add(record);
 				}
 			}
-			List<Record> resultRecord = new LinkedList<Record>(result);
-			return resultRecord;
+			return result;
 		}else {
 			return recordRepo.findByEntityName(entityName);
 		}

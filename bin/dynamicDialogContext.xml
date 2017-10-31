@@ -188,7 +188,7 @@
 						scope="prototype">
 						<property name="nomeStep" value="|S|Realizar Sugestões03|" />
 						<property name="botMessage"
-							value="Escolha a sugestão que deseja ver detalhes" />
+							value="Escolha a sugestão que deseja realizar" />
 						<property name="stepType" value="REQUESTRECORD" />
 						<property name="entity" value="Sugestões" />
 						<property name="key" value="record:Sugestões" />
