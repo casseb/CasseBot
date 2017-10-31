@@ -112,8 +112,7 @@ public class EntityServiceImpl implements EntityService {
 		if(validateValue(record,fieldName,newValue)) {
 			Field field = record.getCampos().get(fieldName);
 			field.setValue(newValue);
-			record.getCampos().put(fieldName, field);
-			recordRepo.save(record);
+			fieldRepo.save(field);
 			return true;
 		}else {
 			return false;
@@ -123,6 +122,7 @@ public class EntityServiceImpl implements EntityService {
 	public Boolean validateValue(Record record, String fieldName, Object newValue) {
 		String type = getType(record, fieldName);
 		if(newValue instanceof String && type.equals("String")
+		|| newValue instanceof Boolean && type.equals("Boolean")
 		|| newValue instanceof Integer && type.equals("Integer")
 		|| newValue instanceof DialogSchema && type.equals("DialogSchema")
 		|| newValue instanceof BotUser && type.equals("BotUser")
@@ -184,6 +184,16 @@ public class EntityServiceImpl implements EntityService {
 			return null;
 		}
 		return valueRecord;
+	}
+	
+	public Boolean getBoolean(Record record, String fieldName) {
+		Boolean valueBoolean;
+		try {
+			valueBoolean = Boolean.valueOf(getValue(record, fieldName).toString()) ;
+		} catch (Exception e) {
+			return null;
+		}
+		return valueBoolean;
 	}
 	
 	@SuppressWarnings("unchecked")

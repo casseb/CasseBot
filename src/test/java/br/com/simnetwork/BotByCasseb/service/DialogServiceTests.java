@@ -22,6 +22,8 @@ import br.com.simnetwork.BotByCasseb.model.service.BotUserService;
 import br.com.simnetwork.BotByCasseb.model.service.BotUserServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.ContextService;
 import br.com.simnetwork.BotByCasseb.model.service.ContextServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DecisionService;
+import br.com.simnetwork.BotByCasseb.model.service.DecisionServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogService;
@@ -82,6 +84,11 @@ public class DialogServiceTests {
 		public EntityService entityService() {
 			return new EntityServiceImpl();
 		}
+        
+        @Bean
+        public DecisionService decisionService() {
+        	return new DecisionServiceImpl();
+        }
     }
 
 	@Autowired

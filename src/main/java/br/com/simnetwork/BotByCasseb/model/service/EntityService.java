@@ -24,6 +24,7 @@ public interface EntityService {
 	public Integer getInteger(Record record, String fieldName);
 	public DialogSchema getDialogSchema(Record record, String fieldName);
 	public BotUser getBotUser(Record record, String fieldName);
+	public Boolean getBoolean(Record record, String fieldName);
 	public RecordStatus insertRecord(String entityName, Map<String, Object> content);
 	public void deleteByKey(String entityName, String key);
 	public void synchronizeBotUserEntity();

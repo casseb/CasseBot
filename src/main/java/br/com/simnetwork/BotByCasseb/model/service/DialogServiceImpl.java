@@ -283,6 +283,42 @@ public class DialogServiceImpl implements DialogService {
 				executeCustomSimpleMessage(botUser, resposta.toString(), null);
 			}
 			
+			// Inserir registro na lista de decision
+			if (dialogStepSchema.getStepType().equals(StepType.INSERTDECISION)) {
+				for(String key : dialogStepSchema.getParameters().keySet()) {
+					dialog.addDecision(key, dialogStepSchema.getParameters().get(key));
+				}
+				executeAgain = true;
+			}
+			
+			// Atualizar dados de um record
+			if (dialogStepSchema.getStepType().equals(StepType.UPDATE)) {
+				Map<String,String> updates = new HashMap<String,String>();
+				String recordKey = decisionService.getDecisionsFilter(dialog.getDecisions(), "record:").get("unico");
+				String entityName = dialogStepSchema.getEntity();
+				Record record = entityService.findByKey(entityName, recordKey);
+				updates = decisionService.getDecisionsFilter(dialog.getDecisions(), "update:");
+				for(String key : updates.keySet()) {
+					
+					boolean ok = true;
+					if(!key.equals("unico")) {
+						if(entityService.getType(record,key).equals("Boolean")) {
+							ok = entityService.setValue(record, key, Boolean.parseBoolean(updates.get(key)));
+						}else {
+							ok = entityService.setValue(record, key, updates.get(key));
+						}
+						
+						if(!ok) {
+							executeCustomSimpleMessage(botUser,"Algo deu errado",null);
+						}
+					}
+					
+				}
+				executeCustomSimpleMessage(botUser, "Registro atualizado", inlineKeyboard);
+				executeAgain = true;
+				
+			}
+			
 			// Conferindo fim do diálogo
 			if (dialog.getDialogStatus().equals(DialogStatus.FIM)) {
 				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));

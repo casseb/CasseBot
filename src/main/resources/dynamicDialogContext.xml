@@ -45,7 +45,7 @@
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="|E|Sugestões|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.object.EntitySchema"
 		scope="prototype">
@@ -59,7 +59,7 @@
 						scope="prototype">
 						<property name="nomeField" value="Título" />
 						<property name="tipo" value="String" />
-						<property name="notNull" value="true" />
+						<property name="notNull" value="True" />
 					</bean>
 				</entry>
 				<entry key="Descrição">
@@ -68,7 +68,7 @@
 						scope="prototype">
 						<property name="nomeField" value="Descrição" />
 						<property name="tipo" value="String" />
-						<property name="notNull" value="true" />
+						<property name="notNull" value="True" />
 					</bean>
 				</entry>
 				<entry key="Realizado">
@@ -77,8 +77,8 @@
 						scope="prototype">
 						<property name="nomeField" value="Realizado" />
 						<property name="tipo" value="Boolean" />
-						<property name="notNull" value="false" />
-						<property name="defaultValue" value="False"/>
+						<property name="notNull" value="False" />
+						<property name="defaultValue" value="False" />
 					</bean>
 				</entry>
 			</map>
@@ -111,13 +111,13 @@
 				</entry>
 				<entry key="2">
 					<bean parent="|S|LINK">
-						<property name="entity" value="Cliente"/>
+						<property name="entity" value="Cliente" />
 					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="|D|Sugestão|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
 		scope="prototype">
@@ -136,19 +136,82 @@
 							<list>
 								<value>Inserir</value>
 								<value>Consultar</value>
+								<value>Realizar</value>
 							</list>
 						</property>
 					</bean>
 				</entry>
 				<entry key="2">
 					<bean parent="|S|LINK">
-						<property name="entity" value="Sugestões"/>
+						<property name="entity" value="Sugestões" />
 					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
-	
+
+	<bean id="|D|Realizar Sugestões|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Realizar Sugestões|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="stepType" value="INSERTDECISION" />
+						<property name="nomeStep" value="|S|Realizar Sugestões01|" />
+						<property name="parameters">
+							<map>
+								<entry key="update:Realizado" value="True" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="stepType" value="INSERTDECISION" />
+						<property name="nomeStep" value="|S|Realizar Sugestões02|" />
+						<property name="parameters">
+							<map>
+								<entry key="query:Realizado" value="False" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Realizar Sugestões03|" />
+						<property name="botMessage"
+							value="Escolha a sugestão que deseja ver detalhes" />
+						<property name="stepType" value="REQUESTRECORD" />
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="record:Sugestões" />
+					</bean>
+				</entry>
+				<entry key="4">
+					<bean parent="|S|REQUESTCONFIRMATION" />
+				</entry>
+				<entry key="5">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+
+						<property name="nomeStep" value="|S|Realizar Sugestões05|" />
+						<property name="stepType" value="UPDATE" />
+						<property name="entity" value="Sugestões" />
+
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
 	<bean id="|D|Consultar Sugestões|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
 		scope="prototype">
@@ -166,19 +229,21 @@
 						<property name="inlineKeyboard">
 							<list>
 								<value>Todas</value>
+								<value>Pendentes</value>
+								<value>Realizadas</value>
 							</list>
 						</property>
 					</bean>
 				</entry>
 				<entry key="2">
 					<bean parent="|S|LINK">
-						<property name="entity" value="Sugestões"/>
+						<property name="entity" value="Sugestões" />
 					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="|D|Todas Sugestões|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
 		scope="prototype">
@@ -190,7 +255,8 @@
 						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 						scope="prototype">
 						<property name="nomeStep" value="|S|Todas Sugestões01|" />
-						<property name="botMessage" value="Escolha a sugestão que deseja ver detalhes" />
+						<property name="botMessage"
+							value="Escolha a sugestão que deseja ver detalhes" />
 						<property name="stepType" value="REQUESTRECORD" />
 						<property name="entity" value="Sugestões" />
 						<property name="key" value="record:Sugestões" />
@@ -201,6 +267,94 @@
 						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 						scope="prototype">
 						<property name="nomeStep" value="|S|Todas Sugestões02|" />
+						<property name="stepType" value="SHOWRECORD" />
+						<property name="entity" value="Sugestões" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="|D|Pendentes Sugestões|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Pendentes Sugestões|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="stepType" value="INSERTDECISION" />
+						<property name="nomeStep" value="|S|Pendentes Sugestões01|" />
+						<property name="parameters">
+							<map>
+								<entry key="query:Realizado" value="False" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Pendentes Sugestões02|" />
+						<property name="botMessage"
+							value="Escolha a sugestão que deseja ver detalhes" />
+						<property name="stepType" value="REQUESTRECORD" />
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="record:Sugestões" />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Pendentes Sugestões03|" />
+						<property name="stepType" value="SHOWRECORD" />
+						<property name="entity" value="Sugestões" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="|D|Realizadas Sugestões|"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
+		scope="prototype">
+		<property name="nomeSchema" value="|D|Realizadas Sugestões|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="stepType" value="INSERTDECISION" />
+						<property name="nomeStep" value="|S|Realizadas Sugestões01|" />
+						<property name="parameters">
+							<map>
+								<entry key="query:Realizado" value="True" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Realizadas Sugestões02|" />
+						<property name="botMessage"
+							value="Escolha a sugestão que deseja ver detalhes" />
+						<property name="stepType" value="REQUESTRECORD" />
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="record:Sugestões" />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean
+						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+						scope="prototype">
+						<property name="nomeStep" value="|S|Realizadas Sugestões03|" />
 						<property name="stepType" value="SHOWRECORD" />
 						<property name="entity" value="Sugestões" />
 					</bean>
@@ -293,9 +447,9 @@
 			</map>
 		</property>
 	</bean>
-	
-	
-	
+
+
+
 	<bean id="|D|Inserir Sugestões|"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
 		scope="prototype">
@@ -317,7 +471,8 @@
 						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
 						scope="prototype">
 						<property name="nomeStep" value="|S|Inserir Nova Sugestão02|" />
-						<property name="botMessage" value="Digite uma descrição sobre o que considera importante que esta ferramenta possua" />
+						<property name="botMessage"
+							value="Digite uma descrição sobre o que considera importante que esta ferramenta possua" />
 						<property name="stepType" value="REQUESTSTRING" />
 						<property name="key" value="Descrição" />
 					</bean>

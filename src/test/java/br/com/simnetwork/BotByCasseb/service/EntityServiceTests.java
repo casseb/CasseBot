@@ -25,8 +25,16 @@ import br.com.simnetwork.BotByCasseb.model.service.BotUserService;
 import br.com.simnetwork.BotByCasseb.model.service.BotUserServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.ContextService;
 import br.com.simnetwork.BotByCasseb.model.service.ContextServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DecisionService;
+import br.com.simnetwork.BotByCasseb.model.service.DecisionServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaService;
 import br.com.simnetwork.BotByCasseb.model.service.DialogSchemaServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DialogService;
+import br.com.simnetwork.BotByCasseb.model.service.DialogServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaService;
+import br.com.simnetwork.BotByCasseb.model.service.DialogStepSchemaServiceImpl;
+import br.com.simnetwork.BotByCasseb.model.service.DynamicListService;
+import br.com.simnetwork.BotByCasseb.model.service.DynamicListServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.EntityService;
 import br.com.simnetwork.BotByCasseb.model.service.EntityServiceImpl;
 import br.com.simnetwork.BotByCasseb.model.service.KeyboardService;
@@ -37,11 +45,16 @@ import br.com.simnetwork.BotByCasseb.model.service.KeyboardServiceImpl;
 public class EntityServiceTests {
 
 	@TestConfiguration
-	static class EntityServiceTestContextConfiguration {
+	static class DialogServiceTestContextConfiguration {
 
 		@Bean
-		public BotUserService botUserService() {
-			return new BotUserServiceImpl();
+		public DialogService dialogService() {
+			return new DialogServiceImpl();
+		}
+
+		@Bean
+		public DialogStepSchemaService dialogStepSchemaService() {
+			return new DialogStepSchemaServiceImpl();
 		}
 
 		@Bean
@@ -53,100 +66,118 @@ public class EntityServiceTests {
 		public ContextService contextService() {
 			return new ContextServiceImpl();
 		}
-		
+
+		@Bean
+		public BotUserService botUserService() {
+			return new BotUserServiceImpl();
+		}
+
+		@Bean
+		public KeyboardService keyboardService() {
+			return new KeyboardServiceImpl();
+		}
+
+		@Bean
+		public DynamicListService dynamicListService() {
+			return new DynamicListServiceImpl();
+		}
+
 		@Bean
 		public EntityService entityService() {
 			return new EntityServiceImpl();
 		}
-		
+
 		@Bean
-        public KeyboardService keyboardService() {
-            return new KeyboardServiceImpl();
-        }
+		public DecisionService decisionService() {
+			return new DecisionServiceImpl();
+		}
 
 	}
-	
+
 	@Autowired
 	private EntityRepository entityRepo;
 	@Autowired
 	private EntityService entityService;
-	
-	private Map<String,Object> content = new HashMap<String,Object>();
 
-	
+	private Map<String, Object> content = new HashMap<String, Object>();
+
 	@Before
-	public void before(){
+	public void before() {
 		entityService.synchronizeStaticEntitiesTest();
-		content.put("id",1);
+		content.put("id", 1);
 		content.put("nome", "Casseb");
 		content.put("cpf", "325");
 		entityService.insertRecord("TestEntity", content);
 	}
-	
+
 	@After
 	public void after() {
 		entityRepo.delete("TestEntity");
 	}
-	
+
 	@Test
 	public void insertRecordTest() {
-		assertEquals(RecordStatus.SUCESSO,entityService.insertRecord("TestEntity", content));
+		assertEquals(RecordStatus.SUCESSO, entityService.insertRecord("TestEntity", content));
 		content.remove("id");
-		assertEquals(RecordStatus.CHAVE_NULL,entityService.insertRecord("TestEntity", content));
+		assertEquals(RecordStatus.CHAVE_NULL, entityService.insertRecord("TestEntity", content));
 	}
-	
+
 	@Test
 	public void findByKeyTest() {
-		assertNotNull(entityService.findByKey("TestEntity", 1+""));
+		assertNotNull(entityService.findByKey("TestEntity", 1 + ""));
 	}
-	
+
 	@Test
 	public void deleteByKeyTest() {
-		entityService.deleteByKey("TestEntity", 1+"");
-		assertNull(entityService.findByKey("TestEntity", 1+""));
+		entityService.deleteByKey("TestEntity", 1 + "");
+		assertNull(entityService.findByKey("TestEntity", 1 + ""));
 	}
-	
+
 	@Test
 	public void getValueTest() {
-		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1+""), "nome"));
+		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1 + ""), "nome"));
 	}
-	
+
 	@Test
 	public void getTypeRecordTest() {
-		assertEquals("String",entityService.getType(entityService.findByKey("TestEntity", 1+""),"nome"));
+		assertEquals("String", entityService.getType(entityService.findByKey("TestEntity", 1 + ""), "nome"));
 	}
-	
+
 	@Test
 	public void getTypeEntityTest() {
-		assertEquals("String",entityService.getType("TestEntity","nome"));
+		assertEquals("String", entityService.getType("TestEntity", "nome"));
 	}
-	
+
 	@Test
 	public void getEntityTest() {
-		assertEquals("TestEntity",entityService.getEntity(entityService.findByKey("TestEntity", 1+"")));
+		assertEquals("TestEntity", entityService.getEntity(entityService.findByKey("TestEntity", 1 + "")));
 	}
-	
+
 	@Test
 	public void setValueTest() {
-		entityService.setValue(entityService.findByKey("TestEntity", 1+""), "nome", "NomeAlt");
-		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1+""), "nome"));
-		assertEquals("NomeAlt",entityService.getString(entityService.findByKey("TestEntity", 1+""), "nome"));
+		entityService.setValue(entityService.findByKey("TestEntity", 1 + ""), "nome", "NomeAlt");
+		assertNotNull(entityService.getValue(entityService.findByKey("TestEntity", 1 + ""), "nome"));
+		String resultTest = entityService.getString(entityService.findByKey("TestEntity", 1 + ""), "nome");
+		assertEquals("NomeAlt", resultTest);
 	}
-	
+
 	@Test
 	public void validateValueTest() {
 		String testeS = "teste";
 		Integer testeI = 123;
-		
-		assertTrue("Integer em Integer",entityService.validateValue(entityService.findByKey("TestEntity", 1+""), "id", testeI));
-		assertTrue("String em String",entityService.validateValue(entityService.findByKey("TestEntity", 1+""), "nome", testeS));
-		
-		assertFalse("Integer em String",entityService.validateValue(entityService.findByKey("TestEntity", 1+""), "id", testeS));
+
+		assertTrue("Integer em Integer",
+				entityService.validateValue(entityService.findByKey("TestEntity", 1 + ""), "id", testeI));
+		assertTrue("String em String",
+				entityService.validateValue(entityService.findByKey("TestEntity", 1 + ""), "nome", testeS));
+
+		assertFalse("Integer em String",
+				entityService.validateValue(entityService.findByKey("TestEntity", 1 + ""), "id", testeS));
 	}
-	
+
 	@Test
 	public void getStringTest() {
-		assertEquals("Casseb",entityService.getString(entityService.findByKey("TestEntity", 1+""), "nome"));
+		assertEquals("Casseb", entityService.getString(entityService.findByKey("TestEntity", 1 + ""), "nome"));
 	}
 
 }
