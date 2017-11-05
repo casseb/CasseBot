@@ -2,17 +2,23 @@ package br.com.simnetwork.BotByCasseb.model.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import br.com.simnetwork.BotByCasseb.model.entity.object.Record;
 
-public interface RecordRepository extends MongoRepository<Record, String> {
+public interface RecordRepository extends MongoRepository<Record, ObjectId> {
 
-	public Record findByEntityNameAndChave(String entityName, String chave);
-
-	public List<Record> findByEntityNameAndCamposNomeFieldAndCamposValue(String entityName, String nomeField,
-			Object value);
-	
 	public List<Record> findByEntityName(String entityName);
+	
+	public Record findByEntityNameAndKeyAndFieldName(String entityName, String key, String fieldName);
+	
+	public List<Record> findByEntityNameAndKey(String entityName, String key);
+	
+	public List<Record> findByEntityNameAndFieldName(String entityName, String fieldName);
+	
+	public List<Record> findByEntityNameAndFieldNameAndValue(String entityName, String fieldName, String value);
 
+	public List<Record> findByEntityNameAndKeyIn(String entityName, List<String> keys);
+	
 }

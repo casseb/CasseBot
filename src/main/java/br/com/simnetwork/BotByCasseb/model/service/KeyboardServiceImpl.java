@@ -46,7 +46,7 @@ public class KeyboardServiceImpl implements KeyboardService {
 	public InlineKeyboardMarkup getRecordInlineKeyboard(List<Record> records) {
 		List<String> inlineOptions = new LinkedList<>();
 		for(Record record : records) {
-			inlineOptions.add(record.getChave());
+			inlineOptions.add(record.getKey());
 		}
 		return getSimpleInlineKeyboard(inlineOptions);
 	}

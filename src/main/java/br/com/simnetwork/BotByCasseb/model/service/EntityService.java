@@ -5,30 +5,32 @@ import java.util.Map;
 
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema;
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
-import br.com.simnetwork.BotByCasseb.model.entity.object.Entity;
 import br.com.simnetwork.BotByCasseb.model.entity.object.Record;
 import br.com.simnetwork.BotByCasseb.model.entity.object.RecordStatus;
+import br.com.simnetwork.BotByCasseb.model.entity.object.RecordType;
 
 public interface EntityService {
 	
 	public void synchronizeStaticEntities();
 	public void synchronizeStaticEntitiesTest();
-	public Record findByKey(String entityName, String key);
-	public Object getValue(Record record, String fieldName);
-	public String getType(Record record, String fieldName);
-	public String getType(String entityName, String fieldName);
-	public String getEntity(Record record);
-	public Boolean setValue(Record record, String fieldName, Object newValue);
-	public Boolean validateValue(Record record, String fieldName, Object newValue);
-	public String getString(Record record, String fieldName);
-	public Integer getInteger(Record record, String fieldName);
-	public DialogSchema getDialogSchema(Record record, String fieldName);
-	public BotUser getBotUser(Record record, String fieldName);
-	public Boolean getBoolean(Record record, String fieldName);
-	public RecordStatus insertRecord(String entityName, Map<String, Object> content);
+	public List<Record> findByKeys(String entityName, String key);
+	public List<Record> findByKeys(String entityName, List<String> keys);
+	public List<String> findByFields(String entityName, Map<String, String> decisions);
 	public void deleteByKey(String entityName, String key);
+	public RecordType getType(Record record, String fieldName);
+	public RecordType getType(String entityName, String fieldName);
+	public Boolean setValue(Record record, String fieldName, String newValue);
+	public Boolean validateValue(Record record, String fieldName, String newValue);
+	public boolean validateInteger(String value);
+	public boolean validateBoolean(String value);
+	public boolean validateRecord(Record record, String value);
+	public boolean validateBotUser(String value);
+	public boolean validateDialogSchema(String value);
+	public Integer getInteger(Record record);
+	public Boolean getBoolean(Record record);
+	public List<Record> validateRecord(Record record);
+	public BotUser getBotUser(Record record);
+	public RecordStatus insertRecord(String entityName, Map<String, String> content);
 	public void synchronizeBotUserEntity();
-	public RecordStatus insertRecordString(String entity, Map<String, String> decisions);
-	public List<Record> findByFields(String entityName, Map<String,String> decisions);
 
 }

@@ -197,7 +197,7 @@ public class DialogServiceImpl implements DialogService {
 
 			// Insert de registro no banco
 			if (dialogStepSchema.getStepType().equals(StepType.INSERT)) {
-				RecordStatus recordStatus = entityService.insertRecordString(dialogStepSchema.getEntity(),
+				RecordStatus recordStatus = entityService.insertRecord(dialogStepSchema.getEntity(),
 						dialog.getDecisions());
 				
 				switch (recordStatus) {
