@@ -13,14 +13,15 @@ public interface EntityService {
 	
 	public void synchronizeStaticEntities();
 	public void synchronizeStaticEntitiesTest();
+	public Record findByKeys(String entityName, String key, String fieldName);
 	public List<Record> findByKeys(String entityName, String key);
 	public List<Record> findByKeys(String entityName, List<String> keys);
 	public List<String> findByFields(String entityName, Map<String, String> decisions);
 	public void deleteByKey(String entityName, String key);
-	public RecordType getType(Record record, String fieldName);
+	public RecordType getType(Record record);
 	public RecordType getType(String entityName, String fieldName);
-	public Boolean setValue(Record record, String fieldName, String newValue);
-	public Boolean validateValue(Record record, String fieldName, String newValue);
+	public Boolean setValue(Record record, String newValue);
+	public Boolean validateValue(Record record, String newValue);
 	public boolean validateInteger(String value);
 	public boolean validateBoolean(String value);
 	public boolean validateRecord(Record record, String value);

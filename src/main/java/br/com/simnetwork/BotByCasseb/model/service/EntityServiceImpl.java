@@ -39,7 +39,8 @@ public class EntityServiceImpl implements EntityService {
 	private KeyService keyService;
 
 	public void synchronizeStaticEntities() {
-
+		
+		recordSchemaRepo.deleteAll();
 		synchronizeBotUserEntity();
 		synchronizeDialogSchemaEntity();
 
@@ -59,6 +60,10 @@ public class EntityServiceImpl implements EntityService {
 		}
 	}
 
+	public Record findByKeys(String entityName, String key, String fieldName) {
+		return recordRepo.findByEntityNameAndKeyAndFieldName(entityName, key, fieldName);
+	}
+	
 	public List<Record> findByKeys(String entityName, String key) {
 		return recordRepo.findByEntityNameAndKey(entityName, key);
 	}
@@ -96,16 +101,16 @@ public class EntityServiceImpl implements EntityService {
 		recordRepo.delete(findByKeys(entityName, key));
 	}
 
-	public RecordType getType(Record record, String fieldName) {
-		return recordSchemaRepo.findByEntityNameAndFieldName(record.getEntityName(), fieldName).getType();
+	public RecordType getType(Record record) {
+		return recordSchemaRepo.findByEntityNameAndFieldName(record.getEntityName(), record.getFieldName()).getType();
 	}
 
 	public RecordType getType(String entityName, String fieldName) {
 		return recordSchemaRepo.findByEntityNameAndFieldName(entityName, fieldName).getType();
 	}
 
-	public Boolean setValue(Record record, String fieldName, String newValue) {
-		if (validateValue(record, fieldName, newValue)) {
+	public Boolean setValue(Record record, String newValue) {
+		if (validateValue(record, newValue)) {
 			record.setValue(newValue);
 			recordRepo.save(record);
 			return true;
@@ -114,8 +119,8 @@ public class EntityServiceImpl implements EntityService {
 		}
 	}
 
-	public Boolean validateValue(Record record, String fieldName, String newValue) {
-		RecordType type = getType(record, fieldName);
+	public Boolean validateValue(Record record, String newValue) {
+		RecordType type = getType(record);
 
 		switch (type) {
 		case STRING:
@@ -209,16 +214,13 @@ public class EntityServiceImpl implements EntityService {
 
 	public void synchronizeBotUserEntity() {
 		recordRepo.delete(recordRepo.findByEntityName("botUser"));
-		recordSchemaRepo.delete(recordSchemaRepo.findByEntityName("botUser"));
 
-		recordSchemaRepo.save(new RecordSchema(1,"botUser","id",RecordType.INTEGER,null,true,true));
-		recordSchemaRepo.save(new RecordSchema(1,"botUser","data",RecordType.BOTUSER,null,true,true));
+		recordSchemaRepo.save(new RecordSchema(1,"botUser","id",RecordType.BOTUSER,null,true,true));
 
 		for (BotUser botUser : botUserService.locateAllBotUsers()) {
 
 			Map<String, String> content = new HashMap<String, String>();
 			content.putIfAbsent("id", botUser.getId().toString());
-
 			insertRecord("botUser", content);
 		}
 
@@ -227,10 +229,8 @@ public class EntityServiceImpl implements EntityService {
 	private void synchronizeDialogSchemaEntity() {
 
 		recordRepo.delete(recordRepo.findByEntityName("dialogSchema"));
-		recordSchemaRepo.delete(recordSchemaRepo.findByEntityName("dialogSchema"));
 
 		recordSchemaRepo.save(new RecordSchema(1,"dialogSchema","nomeSchema",RecordType.DIALOGSCHEMA,null,true,true));
-		recordSchemaRepo.save(new RecordSchema(1,"dialogSchema","data",RecordType.BOTUSER,null,true,true));
 
 		for (DialogSchema dialogSchema : dialogSchemaService.findAllDialogSchema()) {
 			Map<String, String> content = new HashMap<String, String>();

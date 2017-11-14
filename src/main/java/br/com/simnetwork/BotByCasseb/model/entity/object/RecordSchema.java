@@ -16,16 +16,16 @@ public class RecordSchema {
 	@Id
 	private ObjectId objectId;
 	
-	private int order;
+	private Integer order;
 	private String entityName;
 	private String fieldName;
 	private RecordType type;
 	private String defaultValue;
-	private boolean isKey;
-	private boolean notNull;
+	private Boolean isKey;
+	private Boolean notNull;
 	
 	public RecordSchema(int order, String entityName, String fieldName, RecordType type, String defaultValue,
-			boolean isKey, boolean notNull) {
+			Boolean isKey, Boolean notNull) {
 		super();
 		this.objectId = new ObjectId();
 		this.order = order;

@@ -22,7 +22,6 @@ import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSch
 import br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.StepType;
 import br.com.simnetwork.BotByCasseb.model.entity.object.Bot;
 import br.com.simnetwork.BotByCasseb.model.entity.object.BotUser;
-import br.com.simnetwork.BotByCasseb.model.entity.object.Field;
 import br.com.simnetwork.BotByCasseb.model.entity.object.Record;
 import br.com.simnetwork.BotByCasseb.model.entity.object.RecordStatus;
 import br.com.simnetwork.BotByCasseb.model.repository.DialogRepository;
@@ -90,10 +89,33 @@ public class DialogServiceImpl implements DialogService {
 		DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
 		Keyboard keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
 		InlineKeyboardMarkup inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
+		
 
 		do {
 
+			// Setando decisoes globais
+			dialog.addDecision("global:entidade", dialogStepSchema.getEntity());
+			dialog.addDecision("global:atributo", dialogStepSchema.getKey());
+			
+			// Atualizando listas de decisões
+			Map<String, String> userDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "user:");
+			Map<String, String> globalDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "global:");
+			Map<String, String> dialogDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "dialog:");
+			Map<String, String> recordDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "record:");
+			Map<String, String> updateDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "update:");
+			
 			// Execução baseado no tipo do passo---------------------------------
+
+
+			// Preparando mensagem parametrizada
+			if (dialogStepSchema.getBotMessage() != null) {
+				for (String decision : dialog.getDecisions().keySet()) {
+					String decisionChanged = "{{{" + decision + "}}}";
+					dialogStepSchema.setBotMessage(dialogStepSchema.getBotMessage().replace(decisionChanged,
+							dialog.getDecisions().get(decision)));
+				}
+			}
+
 			// Mensagem Simples
 			if (dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)) {
 				executeSchemaSimpleMessage(botUser, dialogStepSchema, keyboard);
@@ -166,8 +188,8 @@ public class DialogServiceImpl implements DialogService {
 					StringBuilder updatedMessage = new StringBuilder();
 					updatedMessage.append(dialogStepSchema.getBotMessage());
 					updatedMessage.append("\n\n");
-					for (String decisionKey : dialog.getDecisions().keySet()) {
-						updatedMessage.append(decisionKey + " : " + dialog.getDecisions().get(decisionKey) + "\n");
+					for (String decisionKey : userDecisions.keySet()) {
+						updatedMessage.append(decisionKey + " : " + userDecisions.get(decisionKey) + "\n");
 					}
 					dialogStepSchema.setBotMessage(updatedMessage.toString());
 
@@ -197,9 +219,8 @@ public class DialogServiceImpl implements DialogService {
 
 			// Insert de registro no banco
 			if (dialogStepSchema.getStepType().equals(StepType.INSERT)) {
-				RecordStatus recordStatus = entityService.insertRecord(dialogStepSchema.getEntity(),
-						dialog.getDecisions());
-				
+				RecordStatus recordStatus = entityService.insertRecord(dialogStepSchema.getEntity(), userDecisions);
+
 				switch (recordStatus) {
 				case SUCESSO:
 					executeCustomSimpleMessage(botUser, "Registro salvo com sucesso", null);
@@ -216,16 +237,18 @@ public class DialogServiceImpl implements DialogService {
 				default:
 					break;
 				}
-				
+
 				executeAgain = true;
-				
+
 			}
-			
+
 			// Requisição de Record
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTRECORD)) {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
-					List<Record> records = entityService.findByFields(dialogStepSchema.getEntity(), dialog.getDecisions());
-					executeRequestInlineOption(botUser, dialogStepSchema, keyboardService.getRecordInlineKeyboard(records));
+					List<String> records = entityService.findByFields(dialogStepSchema.getEntity(),
+							dialog.getDecisions());
+					executeRequestInlineOption(botUser, dialogStepSchema,
+							keyboardService.getSimpleInlineKeyboard(records));
 					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
 					executeAgain = false;
 				} else {
@@ -240,15 +263,15 @@ public class DialogServiceImpl implements DialogService {
 
 				}
 			}
-			
+
 			// Link de um diálogo para outro
 			if (dialogStepSchema.getStepType().equals(StepType.LINK)) {
-				String dialogName = decisionService.getDecisionsFilter(dialog.getDecisions(), "dialog:").get("unico");
+				String dialogName = dialogDecisions.get("unico");
 				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
-				if(dialogStepSchema.getEntity()==null) {
-					dialogName = "|D|"+dialogName+"|";
-				}else {
-					dialogName = "|D|"+dialogName+" "+dialogStepSchema.getEntity()+"|";
+				if (dialogStepSchema.getEntity() == null) {
+					dialogName = "|D|" + dialogName + "|";
+				} else {
+					dialogName = "|D|" + dialogName + " " + dialogStepSchema.getEntity() + "|";
 				}
 				dialogSchema = dialogSchemaService.findDialogSchemabyNomeSchema(dialogName);
 				createDialog(user, dialogSchema);
@@ -260,65 +283,60 @@ public class DialogServiceImpl implements DialogService {
 				dialog.setCurrentStep(0);
 				executeAgain = true;
 			}
-			
+
 			// Mostra os dados de um record
 			if (dialogStepSchema.getStepType().equals(StepType.SHOWRECORD)) {
-				String recordKey = decisionService.getDecisionsFilter(dialog.getDecisions(), "record:").get("unico");
+				String recordKey = recordDecisions.get("unico");
 				String entityName = dialogStepSchema.getEntity();
-				Record record = entityService.findByKey(entityName, recordKey);
+				List<Record> record = entityService.findByKeys(entityName, recordKey);
 				StringBuilder resposta = new StringBuilder();
-				resposta.append("Registro "+record.getChave()+"\n\n");
-				for(String key : record.getCampos().keySet()) {
-					resposta.append(key);
+				resposta.append("Registro " + record.get(0).getKey() + "\n\n");
+				for (Record recordField : record) {
+					resposta.append(recordField.getFieldName());
 					resposta.append(" : ");
-					if(record.getCampos().get(key).getValue().equals("True")) {
+					if (recordField.getValue().equals("True")) {
 						resposta.append("Sim");
-					}else if(record.getCampos().get(key).getValue().equals("False")) {
+					} else if (recordField.getValue().equals("False")) {
 						resposta.append("Não");
-					}else {
-						resposta.append(record.getCampos().get(key).getValue());
+					} else {
+						resposta.append(recordField.getValue());
 					}
 					resposta.append("\n");
 				}
 				executeCustomSimpleMessage(botUser, resposta.toString(), null);
 			}
-			
+
 			// Inserir registro na lista de decision
 			if (dialogStepSchema.getStepType().equals(StepType.INSERTDECISION)) {
-				for(String key : dialogStepSchema.getParameters().keySet()) {
+				for (String key : dialogStepSchema.getParameters().keySet()) {
 					dialog.addDecision(key, dialogStepSchema.getParameters().get(key));
 				}
 				executeAgain = true;
 			}
-			
+
 			// Atualizar dados de um record
 			if (dialogStepSchema.getStepType().equals(StepType.UPDATE)) {
-				Map<String,String> updates = new HashMap<String,String>();
-				String recordKey = decisionService.getDecisionsFilter(dialog.getDecisions(), "record:").get("unico");
+				Map<String, String> updates = new HashMap<String, String>();
+				String recordKey = recordDecisions.get("unico");
 				String entityName = dialogStepSchema.getEntity();
-				Record record = entityService.findByKey(entityName, recordKey);
-				updates = decisionService.getDecisionsFilter(dialog.getDecisions(), "update:");
-				for(String key : updates.keySet()) {
-					
+				updates = updateDecisions;
+				for (String key : updates.keySet()) {
+
 					boolean ok = true;
-					if(!key.equals("unico")) {
-						if(entityService.getType(record,key).equals("Boolean")) {
-							ok = entityService.setValue(record, key, Boolean.parseBoolean(updates.get(key)));
-						}else {
-							ok = entityService.setValue(record, key, updates.get(key));
-						}
-						
-						if(!ok) {
-							executeCustomSimpleMessage(botUser,"Algo deu errado",null);
+					if (!key.equals("unico")) {
+						ok = entityService.setValue(entityService.findByKeys(entityName, recordKey, key),
+								updates.get(key));
+						if (!ok) {
+							executeCustomSimpleMessage(botUser, "Algo deu errado", null);
 						}
 					}
-					
+
 				}
 				executeCustomSimpleMessage(botUser, "Registro atualizado", inlineKeyboard);
 				executeAgain = true;
-				
+
 			}
-			
+
 			// Conferindo fim do diálogo
 			if (dialog.getDialogStatus().equals(DialogStatus.FIM)) {
 				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));

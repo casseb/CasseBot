@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -29,7 +30,7 @@ import lombok.Setter;
 public class DialogStepSchema {
 
 	@Id @NonNull
-	private String nomeStep;
+	private ObjectId id;
 	private String botMessage;
 	private StepType stepType;
 	private List<String> keyboardOptions = new LinkedList<>();

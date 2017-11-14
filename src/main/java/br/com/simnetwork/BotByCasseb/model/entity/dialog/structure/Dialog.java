@@ -25,6 +25,8 @@ public class Dialog {
 	private Integer currentStep = 1;
 	
 	public void addDecision(String key, String value) {
-		decisions.put(key, value);
+		if(value!=null) {
+			decisions.put(key, value);
+		}
 	}
 }

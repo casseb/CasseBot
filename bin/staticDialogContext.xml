@@ -6,94 +6,51 @@
 
 	<!-- Entidades -->
 
-	<bean id="|E|Usuario|"
-		class="br.com.simnetwork.BotByCasseb.model.entity.object.EntitySchema"
-		scope="prototype">
-		<property name="nomeEntity" value="Usuario" />
-		<property name="chave" value="idTelegram" />
-		<property name="campos">
-			<map>
-				<entry key="idTelegram">
-					<bean id="|F|Usuario_idTelegram"
-						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
-						scope="prototype">
-						<property name="nomeField" value="idTelegram" />
-						<property name="tipo" value="Integer" />
-						<property name="notNull" value="true" />
-					</bean>
-				</entry>
-				<entry key="botUser">
-					<bean id="|F|Usuario_botUser"
-						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
-						scope="prototype">
-						<property name="nomeField" value="botUser" />
-						<property name="tipo" value="Record" />
-						<property name="notNull" value="true" />
-					</bean>
-				</entry>
-				<entry key="permissãoL">
-					<bean id="|F|Usuario_permissãoL"
-						class="br.com.simnetwork.BotByCasseb.model.entity.object.FieldSchema"
-						scope="prototype">
-						<property name="nomeField" value="permissãoL" />
-						<property name="tipo" value="List:Record" />
-						<property name="notNull" value="true" />
-					</bean>
-				</entry>
-			</map>
-		</property>
+	<bean id="Usuario" parent="Entity">
+		<property name="entityName" value="Usuario" />
+	</bean>
+	<bean id="|E|0001" parent="Usuario">
+		<property name="order" value="1" />
+		<property name="fieldName" value="Id Telegram" />
+		<property name="type" value="INTEGER" />
+		<property name="isKey" value="true" />
+	</bean>
+	<bean id="|E|0002" parent="Usuario">
+		<property name="order" value="2" />
+		<property name="fieldName" value="Usuário Bot" />
+		<property name="type" value="BOTUSER" />
 	</bean>
 
-	<!-- Diálogos iniciais -->
+	<!-- Diálogos -->
 
-	<bean id="|D|Bem Vindo|"
-		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
-		scope="prototype">
+	<bean id="|D|Bem Vindo|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Bem Vindo|" />
 		<property name="steps">
 			<map>
 				<entry key="1">
-					<bean id="|S|Bem Vindo01|"
-						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
-						scope="prototype">
-						<property name="nomeStep" value="|S|Bem Vindo01|" />
+					<bean parent="|S|REQUESTCONTACT|">
 						<property name="botMessage"
 							value="Seja bem vindo ao Bot By Casseb! Pressione o botão abaixo para fornecer seu número do celular!" />
-						<property name="stepType" value="REQUESTCONTACT" />
 					</bean>
 				</entry>
 				<entry key="2">
-					<bean id="|S|Bem Vindo02|"
-						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
-						scope="prototype">
-						<property name="nomeStep" value="|S|Bem Vindo02|" />
+					<bean parent="|S|SIMPLEMESSAGE|">
 						<property name="botMessage" value="Obrigado" />
-						<property name="stepType" value="SIMPLEMESSAGE" />
 					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
 
-	<bean id="|D|Menu|"
-		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
-		scope="prototype">
+	<bean id="|D|Menu|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Menu|" />
 		<property name="steps">
 			<map>
 				<entry key="1">
-					<bean
-						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
-						scope="prototype">
-						<property name="nomeStep" value="|S|Menu01|" />
-						<property name="botMessage" value="Escolha o que deseja fazer" />
-						<property name="stepType" value="REQUESTINLINEOPTION" />
-						<property name="key" value="dialog:dialog" />
+					<bean parent="|S|REQUESTINLINEOPTION-LINK|">
 						<property name="inlineKeyboard">
 							<list>
-								<value>Hello World</value>
-								<value>Cliente</value>
-								<value>Sugestão</value>
+								<value>Sugestões</value>
 							</list>
 						</property>
 					</bean>
@@ -105,49 +62,68 @@
 		</property>
 	</bean>
 
-	<!-- Diálogos Principais -->
+	<!-- Ponteiros para Classes -->
 
-	<bean id="|D|Hello World|"
+	<bean id="Entity"
+		class="br.com.simnetwork.BotByCasseb.model.entity.object.RecordSchema">
+	</bean>
+
+	<bean id="Step"
+		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
+		scope="prototype">
+	</bean>
+
+	<bean id="List"
+		class="br.com.simnetwork.BotByCasseb.model.entity.object.DynamicList">
+	</bean>
+
+	<bean id="Dialog"
 		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogSchema"
 		scope="prototype">
-		<property name="nomeSchema" value="|D|Hello World|" />
-		<property name="steps">
-			<map>
-				<entry key="1">
-					<bean
-						class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
-						scope="prototype">
-						<property name="nomeStep" value="|S|Hello World01|" />
-						<property name="botMessage" value="Hello World" />
-						<property name="stepType" value="SIMPLEMESSAGE" />
-					</bean>
-				</entry>
-			</map>
-		</property>
+	</bean>
+
+	<!-- Passos -->
+
+	<bean id="|S|REQUESTINLINEOPTION|" parent="Step">
+		<property name="stepType" value="REQUESTINLINEOPTION" />
+		<property name="botMessage" value="Escolha uma das opções abaixo" />
+	</bean>
+
+	<bean id="|S|REQUESTINLINEOPTION-LINK|" parent="|S|REQUESTINLINEOPTION|">
+		<property name="key" value="dialog:dialog" />
+	</bean>
+
+	<bean id="|S|REQUESTCONTACT|" parent="Step">
+		<property name="stepType" value="REQUESTCONTACT" />
+	</bean>
+
+	<bean id="|S|SIMPLEMESSAGE|" parent="Step">
+		<property name="stepType" value="SIMPLEMESSAGE" />
+	</bean>
+
+	<bean id="|S|REQUESTCONFIRMATION" parent="Step">
+		<property name="stepType" value="REQUESTCONFIRMATION" />
+		<property name="botMessage" value="Confirma os seguintes dados fornecidos?" />
+	</bean>
+
+	<bean id="|S|REQUESTSTRING" parent="Step">
+		<property name="stepType" value="REQUESTSTRING" />
+		<property name="botMessage"
+			value="Digite o atributo {{{global:user:atributo}}} da entidade {{{global:entidade}}}" />
+	</bean>
+
+	<bean id="|S|LINK" parent="Step">
+		<property name="stepType" value="LINK" />
+	</bean>
+
+	<bean id="|S|INSERT" parent="Step">
+		<property name="stepType" value="INSERT" />
 	</bean>
 
 	<!-- Listas Padrões -->
 
-	<bean id="|L|ALLDIALOGS"
-		class="br.com.simnetwork.BotByCasseb.model.entity.object.DynamicList">
+	<bean id="|L|ALLDIALOGS" parent="List">
 		<property name="beanType" value="D" />
-	</bean>
-
-	<!-- Steps -->
-
-	<bean id="|S|REQUESTCONFIRMATION"
-		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
-		scope="prototype">
-		<property name="nomeStep" value="|S|REQUESTCONFIRMATION" />
-		<property name="botMessage" value="Confirma os seguintes dados fornecidos?" />
-		<property name="stepType" value="REQUESTCONFIRMATION" />
-	</bean>
-
-	<bean id="|S|LINK"
-		class="br.com.simnetwork.BotByCasseb.model.entity.dialog.structure.DialogStepSchema"
-		scope="prototype">
-		<property name="nomeStep" value="|S|LINK|" />
-		<property name="stepType" value="LINK" />
 	</bean>
 
 </beans>
