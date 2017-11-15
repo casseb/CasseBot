@@ -11,26 +11,26 @@
 	<bean id="Sugestões" parent="Entity">
 		<property name="entityName" value="Sugestões" />
 	</bean>
-	<bean id="|E|001" parent="Sugestões">
+	<bean id="|E|001|" parent="Sugestões">
 		<property name="order" value="1" />
 		<property name="fieldName" value="Título" />
 		<property name="type" value="STRING" />
 		<property name="isKey" value="true" />
 	</bean>
-	<bean id="|E|002" parent="Sugestões">
+	<bean id="|E|002|" parent="Sugestões">
 		<property name="order" value="2" />
 		<property name="fieldName" value="Descrição" />
 		<property name="type" value="STRING" />
 	</bean>
-	<bean id="|E|003" parent="Sugestões">
+	<bean id="|E|003|" parent="Sugestões">
 		<property name="order" value="3" />
 		<property name="fieldName" value="Realizado" />
 		<property name="type" value="BOOLEAN" />
-		<property name="defaultValue" value="False"/>
+		<property name="defaultValue" value="False" />
 	</bean>
-	
+
 	<!-- Diálogos -->
-	
+
 	<bean id="|D|Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Sugestões|" />
 		<property name="steps">
@@ -48,41 +48,68 @@
 					</bean>
 				</entry>
 				<entry key="2">
-					<bean parent="|S|LINK">
-						<property name="entity" value="Sugestões"/>
+					<bean parent="|S|LINK|">
+						<property name="entity" value="Sugestões" />
 					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="|D|Inserir Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Inserir Sugestões|" />
 		<property name="steps">
 			<map>
 				<entry key="1">
-					<bean parent="|S|REQUESTSTRING">
-						<property name="entity" value="Sugestões"/>
-						<property name="key" value="user:Título"/>
+					<bean parent="|S|REQUESTSTRING|">
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="user:Título" />
 					</bean>
 				</entry>
 				<entry key="2">
-					<bean parent="|S|REQUESTSTRING">
-						<property name="entity" value="Sugestões"/>
-						<property name="key" value="user:Descrição"/>
+					<bean parent="|S|REQUESTSTRING|">
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="user:Descrição" />
 					</bean>
 				</entry>
 				<entry key="3">
-					<bean parent="|S|REQUESTCONFIRMATION"/>
+					<bean parent="|S|REQUESTCONFIRMATION|" />
 				</entry>
 				<entry key="4">
-					<bean parent="|S|INSERT">
-						<property name="entity" value="Sugestões"/>
+					<bean parent="|S|INSERT|">
+						<property name="entity" value="Sugestões" />
 					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
-	
-	
+
+	<bean id="|D|Pendentes Sugestões|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Pendentes Sugestões|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|INSERTDECISION|">
+						<property name="parameters">
+							<map>
+								<entry key="query:Realizado" value="False" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="record:Sugestões" />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean parent="|S|SHOWRECORD|">
+						<property name="entity" value="Sugestões" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
 </beans>

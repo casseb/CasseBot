@@ -9,13 +9,13 @@
 	<bean id="Usuario" parent="Entity">
 		<property name="entityName" value="Usuario" />
 	</bean>
-	<bean id="|E|0001" parent="Usuario">
+	<bean id="|E|0001|" parent="Usuario">
 		<property name="order" value="1" />
 		<property name="fieldName" value="Id Telegram" />
 		<property name="type" value="INTEGER" />
 		<property name="isKey" value="true" />
 	</bean>
-	<bean id="|E|0002" parent="Usuario">
+	<bean id="|E|0002|" parent="Usuario">
 		<property name="order" value="2" />
 		<property name="fieldName" value="Usuário Bot" />
 		<property name="type" value="BOTUSER" />
@@ -56,7 +56,7 @@
 					</bean>
 				</entry>
 				<entry key="2">
-					<bean parent="|S|LINK" />
+					<bean parent="|S|LINK|" />
 				</entry>
 			</map>
 		</property>
@@ -101,28 +101,41 @@
 		<property name="stepType" value="SIMPLEMESSAGE" />
 	</bean>
 
-	<bean id="|S|REQUESTCONFIRMATION" parent="Step">
+	<bean id="|S|REQUESTCONFIRMATION|" parent="Step">
 		<property name="stepType" value="REQUESTCONFIRMATION" />
 		<property name="botMessage" value="Confirma os seguintes dados fornecidos?" />
 	</bean>
 
-	<bean id="|S|REQUESTSTRING" parent="Step">
+	<bean id="|S|REQUESTSTRING|" parent="Step">
 		<property name="stepType" value="REQUESTSTRING" />
 		<property name="botMessage"
-			value="Digite o atributo {{{global:user:atributo}}} da entidade {{{global:entidade}}}" />
+			value="Digite o atributo {{{global:atributo}}} da entidade {{{global:entidade}}}" />
 	</bean>
 
-	<bean id="|S|LINK" parent="Step">
+	<bean id="|S|LINK|" parent="Step">
 		<property name="stepType" value="LINK" />
 	</bean>
 
-	<bean id="|S|INSERT" parent="Step">
+	<bean id="|S|INSERT|" parent="Step">
 		<property name="stepType" value="INSERT" />
+	</bean>
+
+	<bean id="|S|INSERTDECISION|" parent="Step">
+		<property name="stepType" value="INSERTDECISION" />
+	</bean>
+
+	<bean id="|S|REQUESTRECORD|" parent="Step">
+		<property name="stepType" value="REQUESTRECORD" />
+		<property name="botMessage" value="Escolha uma das opções abaixo" />
+	</bean>
+	
+	<bean id="|S|SHOWRECORD|" parent="Step">
+		<property name="stepType" value="SHOWRECORD" />
 	</bean>
 
 	<!-- Listas Padrões -->
 
-	<bean id="|L|ALLDIALOGS" parent="List">
+	<bean id="|L|ALLDIALOGS|" parent="List">
 		<property name="beanType" value="D" />
 	</bean>
 

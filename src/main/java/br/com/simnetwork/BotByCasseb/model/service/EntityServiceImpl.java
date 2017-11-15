@@ -39,7 +39,7 @@ public class EntityServiceImpl implements EntityService {
 	private KeyService keyService;
 
 	public void synchronizeStaticEntities() {
-		
+
 		recordSchemaRepo.deleteAll();
 		synchronizeBotUserEntity();
 		synchronizeDialogSchemaEntity();
@@ -63,7 +63,7 @@ public class EntityServiceImpl implements EntityService {
 	public Record findByKeys(String entityName, String key, String fieldName) {
 		return recordRepo.findByEntityNameAndKeyAndFieldName(entityName, key, fieldName);
 	}
-	
+
 	public List<Record> findByKeys(String entityName, String key) {
 		return recordRepo.findByEntityNameAndKey(entityName, key);
 	}
@@ -73,28 +73,16 @@ public class EntityServiceImpl implements EntityService {
 	}
 
 	public List<String> findByFields(String entityName, Map<String, String> decisions) {
-		decisions = decisionService.getDecisionsFilter(decisions, "query:");
-		List<Record> records = new LinkedList<Record>();
-		if (!decisions.isEmpty()) {
-			for (String key : decisions.keySet()) {
-				records = internalSearch(records, entityName, key, decisions.get(key));
-			}
-			return keyService.parseStringKey(records);
-		} else {
-			return keyService.parseStringKey(recordRepo.findByEntityName(entityName));
+		List<Record> records = new LinkedList<>();
+		Map<String, String> queryDecisions = decisionService.getDecisionsFilter(decisions, "query:");
+		queryDecisions.remove("unico");
+		for (String fieldName : queryDecisions.keySet()) {
+			records.addAll(recordRepo.findByEntityNameAndFieldNameAndValueContains(entityName, fieldName,
+					queryDecisions.get(fieldName)));
 		}
-
-	}
-
-	private List<Record> internalSearch(List<Record> target, String entityName, String fieldName, String value) {
-		List<Record> result = new LinkedList<Record>();
-		target = findByKeys(entityName, keyService.parseStringKey(target));
-		for (Record record : target) {
-			if (record.getFieldName().equals(fieldName) && record.getValue().contains(value)) {
-				result.add(record);
-			}
-		}
+		List<String> result = keyService.parseStringKey(records);
 		return result;
+
 	}
 
 	public void deleteByKey(String entityName, String key) {
@@ -190,32 +178,32 @@ public class EntityServiceImpl implements EntityService {
 	}
 
 	public List<Record> validateRecord(Record record) {
-		if(validateRecord(record,record.getValue())) {
+		if (validateRecord(record, record.getValue())) {
 			return findByKeys(record.getEntityName(), record.getValue());
 		}
-			return null;
+		return null;
 	}
 
 	public BotUser getBotUser(Record record) {
-		if(validateBotUser(record.getValue())) {
+		if (validateBotUser(record.getValue())) {
 			return botUserService.locateBotUser(Integer.parseInt(record.getValue()));
 		}
-			return null;
+		return null;
 	}
 
 	public DialogSchema getDialogSchema(Record record) {
-		if(validateDialogSchema(record.getValue())) {
+		if (validateDialogSchema(record.getValue())) {
 			return dialogSchemaService.findDialogSchemabyNomeSchema(record.getValue());
 		}
-			return null;
+		return null;
 	}
-	
-	//<------------------
+
+	// <------------------
 
 	public void synchronizeBotUserEntity() {
 		recordRepo.delete(recordRepo.findByEntityName("botUser"));
 
-		recordSchemaRepo.save(new RecordSchema(1,"botUser","id",RecordType.BOTUSER,null,true,true));
+		recordSchemaRepo.save(new RecordSchema(1, "botUser", "id", RecordType.BOTUSER, null, true, true));
 
 		for (BotUser botUser : botUserService.locateAllBotUsers()) {
 
@@ -230,7 +218,8 @@ public class EntityServiceImpl implements EntityService {
 
 		recordRepo.delete(recordRepo.findByEntityName("dialogSchema"));
 
-		recordSchemaRepo.save(new RecordSchema(1,"dialogSchema","nomeSchema",RecordType.DIALOGSCHEMA,null,true,true));
+		recordSchemaRepo
+				.save(new RecordSchema(1, "dialogSchema", "nomeSchema", RecordType.DIALOGSCHEMA, null, true, true));
 
 		for (DialogSchema dialogSchema : dialogSchemaService.findAllDialogSchema()) {
 			Map<String, String> content = new HashMap<String, String>();
@@ -254,10 +243,10 @@ public class EntityServiceImpl implements EntityService {
 		} else {
 			List<RecordSchema> keys = recordSchemaRepo.findByEntityNameAndIsKey(entityName, true);
 			key = content.get(keys.get(0).getFieldName());
-			if(keys.size()!=1) {
+			if (keys.size() != 1) {
 				keys.remove(0);
-				for(RecordSchema keySchema : keys) {
-					key = key+"-"+content.get(keySchema.getFieldName());
+				for (RecordSchema keySchema : keys) {
+					key = key + "-" + content.get(keySchema.getFieldName());
 				}
 			}
 		}
@@ -272,10 +261,10 @@ public class EntityServiceImpl implements EntityService {
 
 			String fieldValue = content.get(fieldSchema.getFieldName());
 			if (fieldValue != null) {
-				Record record = new Record(entityName,key,fieldSchema.getFieldName(),fieldValue);
+				Record record = new Record(entityName, key, fieldSchema.getFieldName(), fieldValue);
 				recordRepo.save(record);
 			} else if (fieldSchema.getDefaultValue() != null) {
-				Record record = new Record(entityName,key,fieldSchema.getFieldName(),fieldSchema.getDefaultValue());
+				Record record = new Record(entityName, key, fieldSchema.getFieldName(), fieldSchema.getDefaultValue());
 				recordRepo.save(record);
 			}
 		}
@@ -283,6 +272,5 @@ public class EntityServiceImpl implements EntityService {
 		return RecordStatus.SUCESSO;
 
 	}
-
 
 }

@@ -18,6 +18,8 @@ public interface RecordRepository extends MongoRepository<Record, ObjectId> {
 	public List<Record> findByEntityNameAndFieldName(String entityName, String fieldName);
 	
 	public List<Record> findByEntityNameAndFieldNameAndValue(String entityName, String fieldName, String value);
+	
+	public List<Record> findByEntityNameAndFieldNameAndValueContains(String entityName, String fieldName, String value);
 
 	public List<Record> findByEntityNameAndKeyIn(String entityName, List<String> keys);
 	

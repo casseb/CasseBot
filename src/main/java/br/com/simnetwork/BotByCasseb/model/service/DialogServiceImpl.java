@@ -94,8 +94,13 @@ public class DialogServiceImpl implements DialogService {
 		do {
 
 			// Setando decisoes globais
-			dialog.addDecision("global:entidade", dialogStepSchema.getEntity());
-			dialog.addDecision("global:atributo", dialogStepSchema.getKey());
+			if(dialogStepSchema.getEntity() != null) {
+				dialog.addDecision("global:entidade", dialogStepSchema.getEntity());
+			}
+			if(dialogStepSchema.getKey() != null) {
+				dialog.addDecision("global:atributo", dialogStepSchema.getKey().replaceFirst("user:", ""));
+			}
+			
 			
 			// Atualizando listas de decisões
 			Map<String, String> userDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "user:");
@@ -103,10 +108,8 @@ public class DialogServiceImpl implements DialogService {
 			Map<String, String> dialogDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "dialog:");
 			Map<String, String> recordDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "record:");
 			Map<String, String> updateDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "update:");
+			userDecisions.remove("unico");
 			
-			// Execução baseado no tipo do passo---------------------------------
-
-
 			// Preparando mensagem parametrizada
 			if (dialogStepSchema.getBotMessage() != null) {
 				for (String decision : dialog.getDecisions().keySet()) {
@@ -116,14 +119,15 @@ public class DialogServiceImpl implements DialogService {
 				}
 			}
 
-			// Mensagem Simples
-			if (dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)) {
+			// Execução baseado no tipo do passo---------------------------------
+
+			if(dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)){
 				executeSchemaSimpleMessage(botUser, dialogStepSchema, keyboard);
 				executeAgain = true;
 			}
-
-			// Requisição de contato
-			if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONTACT)) {
+			
+			//Requisição dos dados de contato
+			if(dialogStepSchema.getStepType().equals(StepType.REQUESTCONTACT)){
 				if (message.contact() == null) {
 					executeRequestContact(botUser, dialogStepSchema);
 					executeAgain = false;
@@ -137,8 +141,8 @@ public class DialogServiceImpl implements DialogService {
 					}
 				}
 			}
-
-			// Requisição de String
+			
+			//Requisição de uma string
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTSTRING)) {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					executeSchemaSimpleMessage(botUser, dialogStepSchema, keyboard);
@@ -150,19 +154,8 @@ public class DialogServiceImpl implements DialogService {
 					executeAgain = true;
 				}
 			}
-
-			// Mensagem Customizada
-			if (dialogStepSchema.getStepType().equals(StepType.CUSTOMMESSAGE)) {
-				String text = dialogStepSchema.getBotMessage();
-				for (String decision : dialog.getDecisions().keySet()) {
-					String decisionChanged = "{{{" + decision + "}}}";
-					text = text.replace(decisionChanged, dialog.getDecisions().get(decision));
-				}
-				executeCustomSimpleMessage(botUser, text, keyboard);
-				executeAgain = true;
-			}
-
-			// Requisição de escolha inline
+			
+			//Requisição de uma opção usando uma lista
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTINLINEOPTION)) {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
@@ -180,7 +173,7 @@ public class DialogServiceImpl implements DialogService {
 
 				}
 			}
-
+			
 			// Requisição de confirmação dos dados
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONFIRMATION)) {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
@@ -368,7 +361,7 @@ public class DialogServiceImpl implements DialogService {
 	public void resetAllDialogs() {
 		dialogRepo.deleteAll();
 	}
-
+	
 	private void executeSchemaSimpleMessage(BotUser botUser, DialogStepSchema dialogStepSchema, Keyboard keyboard) {
 		Bot.sendMessage(botUser.getId().toString(), dialogStepSchema.getBotMessage(), keyboard);
 	}
