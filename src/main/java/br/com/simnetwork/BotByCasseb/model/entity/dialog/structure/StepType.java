@@ -12,6 +12,7 @@ public enum StepType {
 	LINK,
 	SHOWRECORD,
 	INSERTDECISION,
-	UPDATE
+	UPDATE,
+	DELETE
 
 }

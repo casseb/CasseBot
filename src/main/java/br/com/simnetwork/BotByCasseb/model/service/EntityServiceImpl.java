@@ -76,10 +76,15 @@ public class EntityServiceImpl implements EntityService {
 		List<Record> records = new LinkedList<>();
 		Map<String, String> queryDecisions = decisionService.getDecisionsFilter(decisions, "query:");
 		queryDecisions.remove("unico");
-		for (String fieldName : queryDecisions.keySet()) {
-			records.addAll(recordRepo.findByEntityNameAndFieldNameAndValueContains(entityName, fieldName,
-					queryDecisions.get(fieldName)));
+		if(!queryDecisions.isEmpty()) {
+			for (String fieldName : queryDecisions.keySet()) {
+				records.addAll(recordRepo.findByEntityNameAndFieldNameAndValueContains(entityName, fieldName,
+						queryDecisions.get(fieldName)));
+			}
+		}else {
+			records = recordRepo.findByEntityName(entityName);
 		}
+		
 		List<String> result = keyService.parseStringKey(records);
 		return result;
 
@@ -271,6 +276,11 @@ public class EntityServiceImpl implements EntityService {
 
 		return RecordStatus.SUCESSO;
 
+	}
+
+	@Override
+	public void deleteRecord(String entityName, String recordKey) {
+		recordRepo.delete(findByKeys(entityName, recordKey));
 	}
 
 }

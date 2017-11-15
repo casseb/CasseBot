@@ -132,6 +132,14 @@
 	<bean id="|S|SHOWRECORD|" parent="Step">
 		<property name="stepType" value="SHOWRECORD" />
 	</bean>
+	
+	<bean id="|S|UPDATE|" parent="Step">
+		<property name="stepType" value="UPDATE" />
+	</bean>
+	
+	<bean id="|S|DELETE|" parent="Step">
+		<property name="stepType" value="DELETE" />
+	</bean>
 
 	<!-- Listas Padrões -->
 

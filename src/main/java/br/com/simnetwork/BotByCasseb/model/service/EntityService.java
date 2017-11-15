@@ -33,5 +33,6 @@ public interface EntityService {
 	public BotUser getBotUser(Record record);
 	public RecordStatus insertRecord(String entityName, Map<String, String> content);
 	public void synchronizeBotUserEntity();
+	public void deleteRecord(String entityName,String recordKey);
 
 }

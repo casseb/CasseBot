@@ -42,6 +42,7 @@
 								<value>Inserir</value>
 								<value>Pendentes</value>
 								<value>Realizados</value>
+								<value>Concluir</value>
 								<value>Excluir</value>
 							</list>
 						</property>
@@ -105,6 +106,96 @@
 				</entry>
 				<entry key="3">
 					<bean parent="|S|SHOWRECORD|">
+						<property name="entity" value="Sugestões" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="|D|Realizados Sugestões|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Realizados Sugestões|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|INSERTDECISION|">
+						<property name="parameters">
+							<map>
+								<entry key="query:Realizado" value="True" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="record:Sugestões" />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean parent="|S|SHOWRECORD|">
+						<property name="entity" value="Sugestões" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="|D|Concluir Sugestões|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Concluir Sugestões|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|INSERTDECISION|">
+						<property name="parameters">
+							<map>
+								<entry key="query:Realizado" value="False" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="record:Sugestões" />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean parent="|S|INSERTDECISION|">
+						<property name="parameters">
+							<map>
+								<entry key="update:Realizado" value="True" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="4">
+					<bean parent="|S|REQUESTCONFIRMATION|" />
+				</entry>
+				<entry key="5">
+					<bean parent="|S|UPDATE|">
+						<property name="entity" value="Sugestões" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="|D|Excluir Sugestões|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Excluir Sugestões|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="Sugestões" />
+						<property name="key" value="record:Sugestões" />
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|REQUESTCONFIRMATION|" />
+				</entry>
+				<entry key="3">
+					<bean parent="|S|DELETE|">
 						<property name="entity" value="Sugestões" />
 					</bean>
 				</entry>

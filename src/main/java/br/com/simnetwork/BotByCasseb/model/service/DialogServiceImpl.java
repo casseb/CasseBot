@@ -89,19 +89,17 @@ public class DialogServiceImpl implements DialogService {
 		DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
 		Keyboard keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
 		InlineKeyboardMarkup inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
-		
 
 		do {
 
 			// Setando decisoes globais
-			if(dialogStepSchema.getEntity() != null) {
+			if (dialogStepSchema.getEntity() != null) {
 				dialog.addDecision("global:entidade", dialogStepSchema.getEntity());
 			}
-			if(dialogStepSchema.getKey() != null) {
+			if (dialogStepSchema.getKey() != null) {
 				dialog.addDecision("global:atributo", dialogStepSchema.getKey().replaceFirst("user:", ""));
 			}
-			
-			
+
 			// Atualizando listas de decisões
 			Map<String, String> userDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "user:");
 			Map<String, String> globalDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "global:");
@@ -109,7 +107,7 @@ public class DialogServiceImpl implements DialogService {
 			Map<String, String> recordDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "record:");
 			Map<String, String> updateDecisions = decisionService.getDecisionsFilter(dialog.getDecisions(), "update:");
 			userDecisions.remove("unico");
-			
+
 			// Preparando mensagem parametrizada
 			if (dialogStepSchema.getBotMessage() != null) {
 				for (String decision : dialog.getDecisions().keySet()) {
@@ -121,13 +119,13 @@ public class DialogServiceImpl implements DialogService {
 
 			// Execução baseado no tipo do passo---------------------------------
 
-			if(dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)){
+			if (dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)) {
 				executeSchemaSimpleMessage(botUser, dialogStepSchema, keyboard);
 				executeAgain = true;
 			}
-			
-			//Requisição dos dados de contato
-			if(dialogStepSchema.getStepType().equals(StepType.REQUESTCONTACT)){
+
+			// Requisição dos dados de contato
+			if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONTACT)) {
 				if (message.contact() == null) {
 					executeRequestContact(botUser, dialogStepSchema);
 					executeAgain = false;
@@ -141,8 +139,8 @@ public class DialogServiceImpl implements DialogService {
 					}
 				}
 			}
-			
-			//Requisição de uma string
+
+			// Requisição de uma string
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTSTRING)) {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					executeSchemaSimpleMessage(botUser, dialogStepSchema, keyboard);
@@ -154,8 +152,8 @@ public class DialogServiceImpl implements DialogService {
 					executeAgain = true;
 				}
 			}
-			
-			//Requisição de uma opção usando uma lista
+
+			// Requisição de uma opção usando uma lista
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTINLINEOPTION)) {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
@@ -173,17 +171,37 @@ public class DialogServiceImpl implements DialogService {
 
 				}
 			}
-			
+
 			// Requisição de confirmação dos dados
 			if (dialogStepSchema.getStepType().equals(StepType.REQUESTCONFIRMATION)) {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 
 					StringBuilder updatedMessage = new StringBuilder();
 					updatedMessage.append(dialogStepSchema.getBotMessage());
-					updatedMessage.append("\n\n");
+
 					for (String decisionKey : userDecisions.keySet()) {
+						updatedMessage.append("\n");
 						updatedMessage.append(decisionKey + " : " + userDecisions.get(decisionKey) + "\n");
 					}
+
+					if (!recordDecisions.isEmpty()) {
+						updatedMessage.append("\n");
+						updatedMessage.append("Os seguintes registros:\n");
+						recordDecisions.remove("unico");
+						for (String decision : recordDecisions.values()) {
+							updatedMessage.append(decision + "\n");
+						}
+					}
+
+					if (!updateDecisions.isEmpty()) {
+						updatedMessage.append("\n");
+						updatedMessage.append("Serão alterados para:\n");
+						updateDecisions.remove("unico");
+						for (String decisionKey : updateDecisions.keySet()) {
+							updatedMessage.append(decisionKey + ":" + updateDecisions.get(decisionKey) + "\n");
+						}
+					}
+
 					dialogStepSchema.setBotMessage(updatedMessage.toString());
 
 					List<String> options = new LinkedList<String>();
@@ -240,10 +258,17 @@ public class DialogServiceImpl implements DialogService {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					List<String> records = entityService.findByFields(dialogStepSchema.getEntity(),
 							dialog.getDecisions());
-					executeRequestInlineOption(botUser, dialogStepSchema,
-							keyboardService.getSimpleInlineKeyboard(records));
-					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
-					executeAgain = false;
+					if (!records.isEmpty()) {
+						executeRequestInlineOption(botUser, dialogStepSchema,
+								keyboardService.getSimpleInlineKeyboard(records));
+						dialog.setDialogStatus(DialogStatus.AGUARDANDO);
+						executeAgain = false;
+					} else {
+						executeCustomSimpleMessage(botUser, "Não há registros", inlineKeyboard);
+						dialog.setDialogStatus(DialogStatus.FIM);
+						executeAgain = false;
+					}
+
 				} else {
 					if (callBackData != null) {
 						dialog.addDecision(dialogStepSchema.getKey(), callBackData);
@@ -287,13 +312,7 @@ public class DialogServiceImpl implements DialogService {
 				for (Record recordField : record) {
 					resposta.append(recordField.getFieldName());
 					resposta.append(" : ");
-					if (recordField.getValue().equals("True")) {
-						resposta.append("Sim");
-					} else if (recordField.getValue().equals("False")) {
-						resposta.append("Não");
-					} else {
-						resposta.append(recordField.getValue());
-					}
+					resposta.append(recordField.getValue());
 					resposta.append("\n");
 				}
 				executeCustomSimpleMessage(botUser, resposta.toString(), null);
@@ -330,6 +349,15 @@ public class DialogServiceImpl implements DialogService {
 
 			}
 
+			// Excluindo um record
+			if (dialogStepSchema.getStepType().equals(StepType.DELETE)) {
+				String recordKey = recordDecisions.get("unico");
+				String entityName = dialogStepSchema.getEntity();
+				entityService.deleteRecord(entityName, recordKey);
+				executeCustomSimpleMessage(botUser, "Registro deletado", inlineKeyboard);
+				executeAgain = true;
+			}
+
 			// Conferindo fim do diálogo
 			if (dialog.getDialogStatus().equals(DialogStatus.FIM)) {
 				dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
@@ -361,7 +389,7 @@ public class DialogServiceImpl implements DialogService {
 	public void resetAllDialogs() {
 		dialogRepo.deleteAll();
 	}
-	
+
 	private void executeSchemaSimpleMessage(BotUser botUser, DialogStepSchema dialogStepSchema, Keyboard keyboard) {
 		Bot.sendMessage(botUser.getId().toString(), dialogStepSchema.getBotMessage(), keyboard);
 	}
