@@ -28,6 +28,17 @@
 		<property name="type" value="BOOLEAN" />
 		<property name="defaultValue" value="False" />
 	</bean>
+	
+	<bean id="Demonstração" parent="Entity">
+		<property name="entityName" value="Demonstração" />
+	</bean>
+	<bean id="|E|004|" parent="Demonstração">
+		<property name="order" value="1" />
+		<property name="fieldName" value="Texto Demonstração" />
+		<property name="type" value="STRING" />
+		<property name="isKey" value="true" />
+	</bean>
+	
 
 	<!-- Diálogos -->
 
