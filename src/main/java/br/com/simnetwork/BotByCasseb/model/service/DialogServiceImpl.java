@@ -178,9 +178,8 @@ public class DialogServiceImpl implements DialogService {
 
 					StringBuilder updatedMessage = new StringBuilder();
 					updatedMessage.append(dialogStepSchema.getBotMessage());
-
+					updatedMessage.append("\n\n");
 					for (String decisionKey : userDecisions.keySet()) {
-						updatedMessage.append("\n");
 						updatedMessage.append(decisionKey + " : " + userDecisions.get(decisionKey) + "\n");
 					}
 
@@ -248,6 +247,8 @@ public class DialogServiceImpl implements DialogService {
 				default:
 					break;
 				}
+				
+				dialog.setDecisions(decisionService.cleanDecisions(dialog.getDecisions(), "user:"));
 
 				executeAgain = true;
 
@@ -265,8 +266,7 @@ public class DialogServiceImpl implements DialogService {
 						executeAgain = false;
 					} else {
 						executeCustomSimpleMessage(botUser, "Não há registros", inlineKeyboard);
-						dialog.setDialogStatus(DialogStatus.FIM);
-						executeAgain = false;
+						executeAgain = true;
 					}
 
 				} else {
@@ -307,15 +307,19 @@ public class DialogServiceImpl implements DialogService {
 				String recordKey = recordDecisions.get("unico");
 				String entityName = dialogStepSchema.getEntity();
 				List<Record> record = entityService.findByKeys(entityName, recordKey);
-				StringBuilder resposta = new StringBuilder();
-				resposta.append("Registro " + record.get(0).getKey() + "\n\n");
-				for (Record recordField : record) {
-					resposta.append(recordField.getFieldName());
-					resposta.append(" : ");
-					resposta.append(recordField.getValue());
-					resposta.append("\n");
+				if(record.size()!=0) {
+					StringBuilder resposta = new StringBuilder();
+					resposta.append("Registro " + record.get(0).getKey() + "\n\n");
+					for (Record recordField : record) {
+						resposta.append(recordField.getFieldName());
+						resposta.append(" : ");
+						resposta.append(recordField.getValue());
+						resposta.append("\n");
+					}
+					executeCustomSimpleMessage(botUser, resposta.toString(), null);
+					dialog.setDecisions(decisionService.cleanDecisions(dialog.getDecisions(), "record:"));
 				}
-				executeCustomSimpleMessage(botUser, resposta.toString(), null);
+				executeAgain = true;
 			}
 
 			// Inserir registro na lista de decision
@@ -345,6 +349,7 @@ public class DialogServiceImpl implements DialogService {
 
 				}
 				executeCustomSimpleMessage(botUser, "Registro atualizado", inlineKeyboard);
+				dialog.setDecisions(decisionService.cleanDecisions(dialog.getDecisions(), "record:"));
 				executeAgain = true;
 
 			}
@@ -355,6 +360,7 @@ public class DialogServiceImpl implements DialogService {
 				String entityName = dialogStepSchema.getEntity();
 				entityService.deleteRecord(entityName, recordKey);
 				executeCustomSimpleMessage(botUser, "Registro deletado", inlineKeyboard);
+				dialog.setDecisions(decisionService.cleanDecisions(dialog.getDecisions(), "record:"));
 				executeAgain = true;
 			}
 

@@ -51,6 +51,7 @@
 						<property name="inlineKeyboard">
 							<list>
 								<value>Sugestões</value>
+								<value>Demonstração</value>
 							</list>
 						</property>
 					</bean>

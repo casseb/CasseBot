@@ -6,7 +6,7 @@
 
 	<import resource="staticDialogContext.xml" />
 
-	<!-- Entidades -->
+	<!-- Entidade Sugestões -->
 
 	<bean id="Sugestões" parent="Entity">
 		<property name="entityName" value="Sugestões" />
@@ -28,19 +28,8 @@
 		<property name="type" value="BOOLEAN" />
 		<property name="defaultValue" value="False" />
 	</bean>
-	
-	<bean id="Demonstração" parent="Entity">
-		<property name="entityName" value="Demonstração" />
-	</bean>
-	<bean id="|E|004|" parent="Demonstração">
-		<property name="order" value="1" />
-		<property name="fieldName" value="Texto Demonstração" />
-		<property name="type" value="STRING" />
-		<property name="isKey" value="true" />
-	</bean>
-	
 
-	<!-- Diálogos -->
+	<!-- Diálogos Sugestões -->
 
 	<bean id="|D|Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Sugestões|" />
@@ -69,7 +58,7 @@
 	</bean>
 
 	<bean id="|D|Inserir Sugestões|" parent="Dialog">
-		<property name="nomeSchema" value="|D|Inserir Sugestões|" />
+		<property name="nomeSchema" value="|D|Inserir Sugestões|" ></property>
 		<property name="steps">
 			<map>
 				<entry key="1">
@@ -151,7 +140,7 @@
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="|D|Concluir Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Concluir Sugestões|" />
 		<property name="steps">
@@ -191,7 +180,7 @@
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="|D|Excluir Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Excluir Sugestões|" />
 		<property name="steps">
@@ -213,5 +202,111 @@
 			</map>
 		</property>
 	</bean>
+
+	<!-- Entidade Demonstração -->
+
+	<bean id="Demonstração" parent="Entity">
+		<property name="entityName" value="Demonstração" />
+	</bean>
+	<bean id="|E|004|" parent="Demonstração">
+		<property name="order" value="1" />
+		<property name="fieldName" value="Texto1" />
+		<property name="type" value="STRING" />
+		<property name="isKey" value="true" />
+	</bean>
+	<bean id="|E|005|" parent="Demonstração">
+		<property name="order" value="2" />
+		<property name="fieldName" value="Texto2" />
+		<property name="type" value="STRING" />
+	</bean>
+
+	<!-- Diálogo Demonstração -->
+
+	<bean id="|D|Demonstração|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Demonstração|" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|SIMPLEMESSAGE|">
+						<property name="botMessage"
+							value="Bem Vindo a demonstração do Bot desenvolvido pela Iniciativa Sim Network!" />
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|SIMPLEMESSAGE|">
+						<property name="botMessage"
+							value="Vamos começar criando um novo registro, foi criado um tipo de registro chamado 'Demonstração', iremos listar os itens que já existem: " />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="Demonstração" />
+						<property name="key" value="record:Demonstração" />
+					</bean>
+				</entry>
+				<entry key="4">
+					<bean parent="|S|SHOWRECORD|">
+						<property name="entity" value="Demonstração" />
+					</bean>
+				</entry>
+				<entry key="5">
+					<bean parent="|S|SIMPLEMESSAGE|">
+						<property name="botMessage"
+							value="Agora que vimos um dos registros já existentes, vamos criar nosso próprio:" />
+					</bean>
+				</entry>
+				<entry key="6">
+					<bean parent="|S|REQUESTSTRING|">
+						<property name="entity" value="Demonstração" />
+						<property name="key" value="user:Texto1" />
+					</bean>
+				</entry>
+				<entry key="7">
+					<bean parent="|S|REQUESTSTRING|">
+						<property name="entity" value="Demonstração" />
+						<property name="key" value="user:Texto2" />
+					</bean>
+				</entry>
+				<entry key="8">
+					<bean parent="|S|REQUESTCONFIRMATION|" />
+				</entry>
+				<entry key="9">
+					<bean parent="|S|INSERT|">
+						<property name="entity" value="Demonstração" />
+					</bean>
+				</entry>
+				<entry key="10">
+					<bean parent="|S|SIMPLEMESSAGE|">
+						<property name="botMessage"
+							value="Note que agora seu registro aparece junto aos demais" />
+					</bean>
+				</entry>
+				<entry key="11">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="Demonstração" />
+						<property name="key" value="record:Demonstração" />
+					</bean>
+				</entry>
+				<entry key="12">
+					<bean parent="|S|SHOWRECORD|">
+						<property name="entity" value="Demonstração" />
+					</bean>
+				</entry>
+				<entry key="13">
+					<bean parent="|S|SIMPLEMESSAGE|">
+						<property name="botMessage"
+							value="Finalizamos assim nossa pequena demonstração sobre alguns recursos que esta ferramenta possui, qualquer dúvida pode nos contatar pelo site: www.simnetwork.com.br ou diretamente com o representante comercial que realizou o primeiro contato." />
+					</bean>
+				</entry>
+				<entry key="14">
+					<bean parent="|S|SIMPLEMESSAGE|">
+						<property name="botMessage"
+							value="A equipe da Iniciativa Sim Network agradeçe sua atenção e esperamos seu contato!" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
 
 </beans>
