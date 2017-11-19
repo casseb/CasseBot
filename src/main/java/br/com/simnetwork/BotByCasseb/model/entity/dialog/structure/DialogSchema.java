@@ -23,7 +23,9 @@ public class DialogSchema {
 
 	@Id @NonNull
 	private String nomeSchema;
-	private Boolean top;
+	private boolean noPermissionRequired = false;
+	private boolean onlyAdmin = false;
+	private String defaultEntity;
 	private Map<Integer,DialogStepSchema> steps = new HashMap<>();
 	
 }

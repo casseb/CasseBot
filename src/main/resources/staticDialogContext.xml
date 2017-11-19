@@ -6,25 +6,29 @@
 
 	<!-- Entidades -->
 
-	<bean id="Usuario" parent="Entity">
-		<property name="entityName" value="Usuario" />
+	<bean id="Permissão" parent="Entity">
+		<property name="entityName" value="Permissão" />
 	</bean>
-	<bean id="|E|0001|" parent="Usuario">
+	<bean id="|E|0001|" parent="Permissão">
 		<property name="order" value="1" />
 		<property name="fieldName" value="Id Telegram" />
-		<property name="type" value="INTEGER" />
+		<property name="type" value="STRING" />
 		<property name="isKey" value="true" />
 	</bean>
-	<bean id="|E|0002|" parent="Usuario">
+	<bean id="|E|0002|" parent="Permissão">
 		<property name="order" value="2" />
-		<property name="fieldName" value="Usuário Bot" />
-		<property name="type" value="BOTUSER" />
+		<property name="fieldName" value="Diálogo" />
+		<property name="type" value="STRING" />
+		<property name="isKey" value="true" />
 	</bean>
+
+
 
 	<!-- Diálogos -->
 
 	<bean id="|D|Bem Vindo|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Bem Vindo|" />
+		<property name="noPermissionRequired" value="true" />
 		<property name="steps">
 			<map>
 				<entry key="1">
@@ -44,6 +48,7 @@
 
 	<bean id="|D|Menu|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Menu|" />
+		<property name="noPermissionRequired" value="true" />
 		<property name="steps">
 			<map>
 				<entry key="1">
@@ -52,12 +57,98 @@
 							<list>
 								<value>Sugestões</value>
 								<value>Demonstração</value>
+								<value>Permissão</value>
 							</list>
 						</property>
 					</bean>
 				</entry>
 				<entry key="2">
 					<bean parent="|S|LINK|" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="|D|Permissão|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Permissão|" />
+		<property name="defaultEntity" value="Permissão" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|REQUESTINLINEOPTION-LINK|">
+						<property name="inlineKeyboard">
+							<list>
+								<value>Permitir</value>
+								<value>Negar</value>
+							</list>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|LINK|" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+
+	<bean id="|D|Permitir Permissão|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Permitir Permissão|" />
+		<property name="defaultEntity" value="Permissão" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="botUser" />
+						<property name="key" value="record:Id Telegram" />
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|INSERTDECISION|">
+						<property name="parameters">
+							<map>
+								<entry key="query:noPermissionRequired" value="false" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="dialogSchema" />
+						<property name="key" value="record:Diálogo" />
+					</bean>
+				</entry>
+				<entry key="4">
+					<bean parent="|S|REQUESTCONFIRMATION|" />
+				</entry>
+				<entry key="5">
+					<bean parent="|S|INSERT|" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="|D|Negar Permissão|" parent="Dialog">
+		<property name="nomeSchema" value="|D|Negar Permissão|" />
+		<property name="defaultEntity" value="Permissão" />
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="entity" value="botUser" />
+						<property name="key" value="query:Id Telegram" />
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean parent="|S|REQUESTRECORD|">
+						<property name="key" value="record:Permissão" />
+					</bean>
+				</entry>
+				<entry key="3">
+					<bean parent="|S|REQUESTCONFIRMATION|" />
+				</entry>
+				<entry key="4">
+					<bean parent="|S|DELETE|" />
 				</entry>
 			</map>
 		</property>
@@ -90,7 +181,9 @@
 		<property name="botMessage" value="Escolha uma das opções abaixo" />
 	</bean>
 
-	<bean id="|S|REQUESTINLINEOPTION-LINK|" parent="|S|REQUESTINLINEOPTION|">
+	<bean id="|S|REQUESTINLINEOPTION-LINK|" parent="Step">
+		<property name="stepType" value="REQUESTINLINEOPTIONLINK" />
+		<property name="botMessage" value="Escolha uma das opções abaixo" />
 		<property name="key" value="dialog:dialog" />
 	</bean>
 
@@ -129,15 +222,15 @@
 		<property name="stepType" value="REQUESTRECORD" />
 		<property name="botMessage" value="Escolha uma das opções abaixo" />
 	</bean>
-	
+
 	<bean id="|S|SHOWRECORD|" parent="Step">
 		<property name="stepType" value="SHOWRECORD" />
 	</bean>
-	
+
 	<bean id="|S|UPDATE|" parent="Step">
 		<property name="stepType" value="UPDATE" />
 	</bean>
-	
+
 	<bean id="|S|DELETE|" parent="Step">
 		<property name="stepType" value="DELETE" />
 	</bean>

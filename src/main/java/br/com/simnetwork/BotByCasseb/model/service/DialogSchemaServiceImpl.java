@@ -1,5 +1,6 @@
 package br.com.simnetwork.BotByCasseb.model.service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,6 @@ public class DialogSchemaServiceImpl implements DialogSchemaService{
 		for(String dialogSchemaName : contextService.getDialogSchemasBeanDefinitionNames(true)) {
 			synchronizeDialogSchema(dialogSchemaName);
 		}
-		
 	}
 
 	@Override
@@ -44,6 +44,15 @@ public class DialogSchemaServiceImpl implements DialogSchemaService{
 	@Override
 	public List<DialogSchema> findAllDialogSchema() {
 		return dialogSchemaRepo.findAll();
+	}
+	
+	public List<String> findByNoPermissionRequired(){
+		List<DialogSchema> dialogs = dialogSchemaRepo.findByNoPermissionRequired(true);
+		List<String> result = new LinkedList<>();
+		for(DialogSchema dialog : dialogs) {
+			result.add(dialog.getNomeSchema());
+		}
+		return result;
 	}
 
 }

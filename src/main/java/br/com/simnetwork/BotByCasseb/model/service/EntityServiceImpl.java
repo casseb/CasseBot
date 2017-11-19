@@ -43,13 +43,14 @@ public class EntityServiceImpl implements EntityService {
 		recordSchemaRepo.deleteAll();
 		synchronizeBotUserEntity();
 		synchronizeDialogSchemaEntity();
-
+		
 		for (String recordSchemaName : contextService.getEntitySchemasBeanDefinitionNames(true)) {
 			RecordSchema recordSchema = (RecordSchema) contextService.getObjectBean(recordSchemaName,
 					RecordSchema.class);
 			recordSchemaRepo.save(recordSchema);
 		}
 
+		synchronizeDefaultPermissions();
 	}
 
 	public void synchronizeStaticEntitiesTest() {
@@ -58,6 +59,23 @@ public class EntityServiceImpl implements EntityService {
 					RecordSchema.class);
 			recordSchemaRepo.save(recordSchema);
 		}
+	}
+	
+	private void synchronizeDefaultPermissions() {
+		Map<String, String> content = new HashMap<String, String>();
+		content.put("Id Telegram", "336050938-Felipe Casseb");
+		content.put("Diálogo", "|D|Permissão|");
+		insertRecord("Permissão", content);
+		
+		content = new HashMap<String, String>();
+		content.put("Id Telegram", "336050938-Felipe Casseb");
+		content.put("Diálogo", "|D|Permitir Permissão|");
+		insertRecord("Permissão", content);
+		
+		content = new HashMap<String, String>();
+		content.put("Id Telegram", "336050938-Felipe Casseb");
+		content.put("Diálogo", "|D|Negar Permissão|");
+		insertRecord("Permissão", content);
 	}
 
 	public Record findByKeys(String entityName, String key, String fieldName) {
@@ -208,13 +226,16 @@ public class EntityServiceImpl implements EntityService {
 	public void synchronizeBotUserEntity() {
 		recordRepo.delete(recordRepo.findByEntityName("botUser"));
 
-		recordSchemaRepo.save(new RecordSchema(1, "botUser", "id", RecordType.BOTUSER, null, true, true));
+		recordSchemaRepo.save(new RecordSchema(1, "botUser", "id", RecordType.STRING, null, true, true));
+		recordSchemaRepo.save(new RecordSchema(2, "botUser", "userName", RecordType.STRING, null, true, true));
 
 		for (BotUser botUser : botUserService.locateAllBotUsers()) {
 
 			Map<String, String> content = new HashMap<String, String>();
 			content.putIfAbsent("id", botUser.getId().toString());
-			insertRecord("botUser", content);
+			content.putIfAbsent("userName", botUser.getFirstName() + " " + botUser.getLastName());
+			RecordStatus recordStatus = insertRecord("botUser", content);
+			recordStatus.toString();
 		}
 
 	}
@@ -224,11 +245,14 @@ public class EntityServiceImpl implements EntityService {
 		recordRepo.delete(recordRepo.findByEntityName("dialogSchema"));
 
 		recordSchemaRepo
-				.save(new RecordSchema(1, "dialogSchema", "nomeSchema", RecordType.DIALOGSCHEMA, null, true, true));
+				.save(new RecordSchema(1, "dialogSchema", "nomeSchema", RecordType.STRING, null, true, true));
+		recordSchemaRepo
+		.save(new RecordSchema(1, "dialogSchema", "noPermissionRequired", RecordType.BOOLEAN, null, false, false));
 
 		for (DialogSchema dialogSchema : dialogSchemaService.findAllDialogSchema()) {
 			Map<String, String> content = new HashMap<String, String>();
-			content.putIfAbsent("id", dialogSchema.getNomeSchema());
+			content.putIfAbsent("nomeSchema", dialogSchema.getNomeSchema());
+			content.putIfAbsent("noPermissionRequired", dialogSchema.isNoPermissionRequired()+"");
 			insertRecord("dialogSchema", content);
 		}
 

@@ -23,6 +23,7 @@ public class Dialog {
 	private DialogStatus dialogStatus = DialogStatus.INICIO;
 	private Map<String,String> decisions = new HashMap<>();
 	private Integer currentStep = 1;
+
 	
 	public void addDecision(String key, String value) {
 		if(value!=null) {

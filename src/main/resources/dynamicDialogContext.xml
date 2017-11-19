@@ -33,6 +33,8 @@
 
 	<bean id="|D|Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Sugestões|" />
+		<property name="noPermissionRequired" value="true"/>
+		<property name="defaultEntity" value="Sugestões"/>
 		<property name="steps">
 			<map>
 				<entry key="1">
@@ -49,9 +51,7 @@
 					</bean>
 				</entry>
 				<entry key="2">
-					<bean parent="|S|LINK|">
-						<property name="entity" value="Sugestões" />
-					</bean>
+					<bean parent="|S|LINK|"/>
 				</entry>
 			</map>
 		</property>
@@ -59,6 +59,7 @@
 
 	<bean id="|D|Inserir Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Inserir Sugestões|" ></property>
+		<property name="noPermissionRequired" value="true"/>
 		<property name="steps">
 			<map>
 				<entry key="1">
@@ -87,6 +88,7 @@
 
 	<bean id="|D|Pendentes Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Pendentes Sugestões|" />
+		<property name="noPermissionRequired" value="true"/>
 		<property name="steps">
 			<map>
 				<entry key="1">
@@ -115,6 +117,7 @@
 
 	<bean id="|D|Realizados Sugestões|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Realizados Sugestões|" />
+		<property name="noPermissionRequired" value="true"/>
 		<property name="steps">
 			<map>
 				<entry key="1">
@@ -224,6 +227,7 @@
 
 	<bean id="|D|Demonstração|" parent="Dialog">
 		<property name="nomeSchema" value="|D|Demonstração|" />
+		<property name="noPermissionRequired" value="true"/>
 		<property name="steps">
 			<map>
 				<entry key="1">

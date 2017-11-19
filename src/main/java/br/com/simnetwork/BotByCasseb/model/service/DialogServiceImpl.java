@@ -117,6 +117,11 @@ public class DialogServiceImpl implements DialogService {
 				}
 			}
 
+			// Tratando entity default
+			if (dialogStepSchema.getEntity() == null && dialogSchema.getDefaultEntity() != null) {
+				dialogStepSchema.setEntity(dialogSchema.getDefaultEntity());
+			}
+
 			// Execução baseado no tipo do passo---------------------------------
 
 			if (dialogStepSchema.getStepType().equals(StepType.SIMPLEMESSAGE)) {
@@ -162,6 +167,36 @@ public class DialogServiceImpl implements DialogService {
 				} else {
 					if (callBackData != null) {
 						dialog.addDecision(dialogStepSchema.getKey(), callBackData);
+						dialog.setDialogStatus(DialogStatus.INICIO);
+						executeAgain = true;
+					} else {
+						executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
+						executeAgain = false;
+					}
+
+				}
+			}
+
+			// Requisição de uma opção usando uma lista para acessar outro dialog
+			if (dialogStepSchema.getStepType().equals(StepType.REQUESTINLINEOPTIONLINK)) {
+				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
+					List<String> options = new LinkedList<>();
+					for (String option : dialogStepSchema.getInlineKeyboard()) {
+						if (	   dialogStepSchema.getEntity() != null && dialogSchemaService.findByNoPermissionRequired().contains("|D|" + option + " " + dialogStepSchema.getEntity() + "|") 
+								|| dialogStepSchema.getEntity() == null && dialogSchemaService.findByNoPermissionRequired().contains("|D|" + option + "|")
+								|| dialogStepSchema.getEntity() != null && !entityService.findByKeys("Permissão",botUser.getId()+"-"+botUser.getFirstName()+" "+botUser.getLastName()+"-"+"|D|" + option + " " + dialogStepSchema.getEntity() + "|").isEmpty()
+								|| dialogStepSchema.getEntity() == null && !entityService.findByKeys("Permissão",botUser.getId()+"-"+botUser.getFirstName()+" "+botUser.getLastName()+"-"+"|D|" + option + "|").isEmpty()
+							) {
+							options.add(option);
+						}
+					}
+					inlineKeyboard = keyboardService.getSimpleInlineKeyboard(options);
+					executeRequestInlineOption(botUser, dialogStepSchema, inlineKeyboard);
+					dialog.setDialogStatus(DialogStatus.AGUARDANDO);
+					executeAgain = false;
+				} else {
+					if (callBackData != null) {
+						dialog.addDecision(dialogStepSchema.getKey(),callBackData);
 						dialog.setDialogStatus(DialogStatus.INICIO);
 						executeAgain = true;
 					} else {
@@ -229,7 +264,10 @@ public class DialogServiceImpl implements DialogService {
 
 			// Insert de registro no banco
 			if (dialogStepSchema.getStepType().equals(StepType.INSERT)) {
-				RecordStatus recordStatus = entityService.insertRecord(dialogStepSchema.getEntity(), userDecisions);
+				Map<String,String> decisions = new HashMap<String,String>();
+				decisions.putAll(recordDecisions);
+				decisions.putAll(userDecisions);
+				RecordStatus recordStatus = entityService.insertRecord(dialogStepSchema.getEntity(), decisions);
 
 				switch (recordStatus) {
 				case SUCESSO:
@@ -247,7 +285,7 @@ public class DialogServiceImpl implements DialogService {
 				default:
 					break;
 				}
-				
+
 				dialog.setDecisions(decisionService.cleanDecisions(dialog.getDecisions(), "user:"));
 
 				executeAgain = true;
@@ -307,7 +345,7 @@ public class DialogServiceImpl implements DialogService {
 				String recordKey = recordDecisions.get("unico");
 				String entityName = dialogStepSchema.getEntity();
 				List<Record> record = entityService.findByKeys(entityName, recordKey);
-				if(record.size()!=0) {
+				if (record.size() != 0) {
 					StringBuilder resposta = new StringBuilder();
 					resposta.append("Registro " + record.get(0).getKey() + "\n\n");
 					for (Record recordField : record) {
@@ -337,7 +375,6 @@ public class DialogServiceImpl implements DialogService {
 				String entityName = dialogStepSchema.getEntity();
 				updates = updateDecisions;
 				for (String key : updates.keySet()) {
-
 					boolean ok = true;
 					if (!key.equals("unico")) {
 						ok = entityService.setValue(entityService.findByKeys(entityName, recordKey, key),

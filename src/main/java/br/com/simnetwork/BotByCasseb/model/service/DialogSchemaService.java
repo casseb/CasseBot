@@ -14,4 +14,6 @@ public interface DialogSchemaService {
 	
 	public List<DialogSchema> findAllDialogSchema();
 	
+	public List<String> findByNoPermissionRequired();
+	
 }
