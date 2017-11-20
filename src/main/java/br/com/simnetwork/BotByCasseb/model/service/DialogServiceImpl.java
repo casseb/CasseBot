@@ -48,16 +48,21 @@ public class DialogServiceImpl implements DialogService {
 	public void decideDialog(Update update) {
 		User user;
 		String callBackData = null;
+		String keyboardMessage = null;
 		Message message;
 		if (update.message() != null) {
 			user = update.message().from();
 			message = update.message();
+			keyboardMessage = update.message().text();
 		} else {
 			user = update.callbackQuery().from();
 			callBackData = update.callbackQuery().data();
 			message = update.callbackQuery().message();
 		}
 		BotUser botUser = new BotUser(user);
+		if(keyboardMessage != null && keyboardMessage.equals("Menu") && dialogRepo.findByBotUserId(botUser.getId()) != null) {
+			dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
+		}
 		if (dialogRepo.findByBotUserId(botUser.getId()) == null) {
 			createDialog(user, dialogSchemaService.findDialogSchemabyNomeSchema("|D|Menu|"));
 		}
@@ -82,15 +87,17 @@ public class DialogServiceImpl implements DialogService {
 
 		boolean executeAgain = false;
 
-		// Preparando dados para execução
-		BotUser botUser = botUserService.locateBotUser(user.id());
-		Dialog dialog = dialogRepo.findOne(botUser);
-		DialogSchema dialogSchema = dialog.getDialogSchema();
-		DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
-		Keyboard keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
-		InlineKeyboardMarkup inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
-
+		
 		do {
+			
+			// Preparando dados para execução
+			BotUser botUser = botUserService.locateBotUser(user.id());
+			Dialog dialog = dialogRepo.findOne(botUser);
+			DialogSchema dialogSchema = dialog.getDialogSchema();
+			DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
+			Keyboard keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
+			InlineKeyboardMarkup inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
+
 
 			// Setando decisoes globais
 			if (dialogStepSchema.getEntity() != null) {
@@ -415,7 +422,8 @@ public class DialogServiceImpl implements DialogService {
 			if (!dialog.getDialogStatus().equals(DialogStatus.FIM)) {
 				if (dialogSchema.getSteps().get(dialog.getCurrentStep()) == null) {
 					dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
-					executeAgain = false;
+					createDialog(user, dialogSchemaService.findDialogSchemabyNomeSchema("|D|Menu|"));
+					executeAgain = true;
 				} else {
 					dialogRepo.save(dialog);
 					dialogStepSchema = dialog.getDialogSchema().getSteps().get(dialog.getCurrentStep());

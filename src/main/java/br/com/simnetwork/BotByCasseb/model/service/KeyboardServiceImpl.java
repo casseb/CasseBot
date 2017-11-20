@@ -29,7 +29,7 @@ public class KeyboardServiceImpl implements KeyboardService {
 		List<String> options = new LinkedList<String>();
 		options.add("Menu");
 		Map<Integer, String[]> map = prepareKeyboard(options);
-		Keyboard replyKeyboardMarkup = new ReplyKeyboardMarkup(map.values().toArray(new String[map.size()][20]));
+		Keyboard replyKeyboardMarkup = new ReplyKeyboardMarkup(map.values().toArray(new String[map.size()][20])).resizeKeyboard(true);
 		return replyKeyboardMarkup;
 	}
 
