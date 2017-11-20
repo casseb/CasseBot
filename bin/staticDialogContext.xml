@@ -176,6 +176,10 @@
 
 	<!-- Passos -->
 
+	<bean id="|S|DELAY|" parent="Step">
+		<property name="stepType" value="DELAY" />
+	</bean>
+	
 	<bean id="|S|REQUESTINLINEOPTION|" parent="Step">
 		<property name="stepType" value="REQUESTINLINEOPTION" />
 		<property name="botMessage" value="Escolha uma das opções abaixo" />

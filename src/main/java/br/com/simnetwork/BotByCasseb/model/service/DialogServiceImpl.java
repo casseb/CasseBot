@@ -60,7 +60,8 @@ public class DialogServiceImpl implements DialogService {
 			message = update.callbackQuery().message();
 		}
 		BotUser botUser = new BotUser(user);
-		if(keyboardMessage != null && keyboardMessage.equals("Menu") && dialogRepo.findByBotUserId(botUser.getId()) != null) {
+		if (keyboardMessage != null && keyboardMessage.equals("Menu")
+				&& dialogRepo.findByBotUserId(botUser.getId()) != null) {
 			dialogRepo.delete(dialogRepo.findByBotUserId(botUser.getId()));
 		}
 		if (dialogRepo.findByBotUserId(botUser.getId()) == null) {
@@ -87,9 +88,8 @@ public class DialogServiceImpl implements DialogService {
 
 		boolean executeAgain = false;
 
-		
 		do {
-			
+
 			// Preparando dados para execução
 			BotUser botUser = botUserService.locateBotUser(user.id());
 			Dialog dialog = dialogRepo.findOne(botUser);
@@ -97,7 +97,6 @@ public class DialogServiceImpl implements DialogService {
 			DialogStepSchema dialogStepSchema = dialogSchema.getSteps().get(dialog.getCurrentStep());
 			Keyboard keyboard = dialogStepSchemaService.getKeyboard(dialogStepSchema);
 			InlineKeyboardMarkup inlineKeyboard = dialogStepSchemaService.getInlineKeyboard(dialogStepSchema);
-
 
 			// Setando decisoes globais
 			if (dialogStepSchema.getEntity() != null) {
@@ -189,11 +188,20 @@ public class DialogServiceImpl implements DialogService {
 				if (!dialog.getDialogStatus().equals(DialogStatus.AGUARDANDO)) {
 					List<String> options = new LinkedList<>();
 					for (String option : dialogStepSchema.getInlineKeyboard()) {
-						if (	   dialogStepSchema.getEntity() != null && dialogSchemaService.findByNoPermissionRequired().contains("|D|" + option + " " + dialogStepSchema.getEntity() + "|") 
-								|| dialogStepSchema.getEntity() == null && dialogSchemaService.findByNoPermissionRequired().contains("|D|" + option + "|")
-								|| dialogStepSchema.getEntity() != null && !entityService.findByKeys("Permissão",botUser.getId()+"-"+botUser.getFirstName()+" "+botUser.getLastName()+"-"+"|D|" + option + " " + dialogStepSchema.getEntity() + "|").isEmpty()
-								|| dialogStepSchema.getEntity() == null && !entityService.findByKeys("Permissão",botUser.getId()+"-"+botUser.getFirstName()+" "+botUser.getLastName()+"-"+"|D|" + option + "|").isEmpty()
-							) {
+						if (dialogStepSchema.getEntity() != null
+								&& dialogSchemaService.findByNoPermissionRequired()
+										.contains("|D|" + option + " " + dialogStepSchema.getEntity() + "|")
+								|| dialogStepSchema.getEntity() == null && dialogSchemaService
+										.findByNoPermissionRequired().contains("|D|" + option + "|")
+								|| dialogStepSchema.getEntity() != null && !entityService.findByKeys("Permissão",
+										botUser.getId() + "-" + botUser.getFirstName() + " " + botUser.getLastName()
+												+ "-" + "|D|" + option + " " + dialogStepSchema.getEntity() + "|")
+										.isEmpty()
+								|| dialogStepSchema.getEntity() == null && !entityService
+										.findByKeys("Permissão",
+												botUser.getId() + "-" + botUser.getFirstName() + " "
+														+ botUser.getLastName() + "-" + "|D|" + option + "|")
+										.isEmpty()) {
 							options.add(option);
 						}
 					}
@@ -203,7 +211,7 @@ public class DialogServiceImpl implements DialogService {
 					executeAgain = false;
 				} else {
 					if (callBackData != null) {
-						dialog.addDecision(dialogStepSchema.getKey(),callBackData);
+						dialog.addDecision(dialogStepSchema.getKey(), callBackData);
 						dialog.setDialogStatus(DialogStatus.INICIO);
 						executeAgain = true;
 					} else {
@@ -271,7 +279,7 @@ public class DialogServiceImpl implements DialogService {
 
 			// Insert de registro no banco
 			if (dialogStepSchema.getStepType().equals(StepType.INSERT)) {
-				Map<String,String> decisions = new HashMap<String,String>();
+				Map<String, String> decisions = new HashMap<String, String>();
 				decisions.putAll(recordDecisions);
 				decisions.putAll(userDecisions);
 				RecordStatus recordStatus = entityService.insertRecord(dialogStepSchema.getEntity(), decisions);
@@ -407,6 +415,25 @@ public class DialogServiceImpl implements DialogService {
 				dialog.setDecisions(decisionService.cleanDecisions(dialog.getDecisions(), "record:"));
 				executeAgain = true;
 			}
+
+			// Delay
+			if (dialogStepSchema.getStepType().equals(StepType.DELAY)) {
+				int seconds = 0;
+				if(dialogStepSchema.getParameters().containsKey("timeInSeconds")) {
+					seconds = Integer.parseInt(dialogStepSchema.getParameters().get("timeInSeconds"));
+				}else {
+					seconds = 2;
+				}
+				
+				try {
+					Thread.sleep(seconds * 1000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				executeAgain = true;
+			}
+
+			// ------------------------------------------------------
 
 			// Conferindo fim do diálogo
 			if (dialog.getDialogStatus().equals(DialogStatus.FIM)) {

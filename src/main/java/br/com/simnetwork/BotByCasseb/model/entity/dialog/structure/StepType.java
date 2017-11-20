@@ -14,6 +14,7 @@ public enum StepType {
 	SHOWRECORD,
 	INSERTDECISION,
 	UPDATE,
-	DELETE
+	DELETE,
+	DELAY
 
 }
