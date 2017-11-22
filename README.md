@@ -22,7 +22,10 @@ Está sendo utilizado as seguintes tecnologias:
 ###### 
 Esta aplicação tem como objetivo principal ser um ERP para uso empresarial, onde será possível cadastrar clientes, produtos, gerar relatórios, de forma mais facilitada utilizando Telegram como ferramenta de interação.
 
-Esta aplicação foi desenvolvida seguindo um conceito próprio de Diálogos, Passos e Entidade.
+Esta aplicação foi desenvolvida seguindo um conceito próprio de Diálogos, Passos e Entidade, todos estes detalhes podem ser customizados em um arquivo xml, sem a necessidade de acesso ao fonte principal ou ao banco de dados.
+#
+
+**É possível configurar tudo na aplicação pelo XML, tanto tabelas quanto o comportamento do bot.** 
 
 ##
 **Passo**
